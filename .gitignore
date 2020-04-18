@@ -50,3 +50,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+TowerDefense/TowerDefense.layout
+TowerDefense/TowerDefense.layout
+*.layout
+TowerDefense/TowerDefense.layout
