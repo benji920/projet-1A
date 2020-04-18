@@ -9,7 +9,7 @@ void reglages();//affichage des reglages
 
 int main()
 {
-    BITMAP* decor;
+    BITMAP *decor;
     BITMAP* page;
     srand(time(NULL));
     allegro_init();
@@ -35,7 +35,7 @@ int main()
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear_bitmap(page);
 
-    blit(decor,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+    blit(decor,screen,0,0, (SCREEN_W-decor->w)/2, (SCREEN_H-decor->h)/2, decor->w, decor->h);
 
     menu();
     while ( !key[KEY_ESC] )
@@ -49,7 +49,8 @@ END_OF_MAIN();
 
 void menu()
 {
-    clear(screen);
+
+
     textprintf_ex(screen,font,SCREEN_W/2-100,270,makecol(255,255,0),makecol(0,0,0)," ed APPUYER POUR JOUER ");
     textprintf_ex(screen,font,SCREEN_W/2,300,makecol(0,255,0),makecol(0,0,0),"  APPUYER SUR HAUT POUR MODE D'EMPLOI ");
     textprintf_ex(screen,font,SCREEN_W/2,330,makecol(0,0,255),makecol(0,0,0),"  APPUYER SUR BAS POUR REGLAGES ");
