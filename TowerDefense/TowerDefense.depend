@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1587227715 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
+1587228947 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
 	<allegro.h>
 	<time.h>
 	<math.h>

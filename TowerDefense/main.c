@@ -51,7 +51,7 @@ void menu()
 {
 
 
-    textprintf_ex(screen,font,SCREEN_W/2-100,270,makecol(255,255,0),makecol(0,0,0)," ed APPUYER POUR JOUER ");
+    textprintf_ex(screen,font,SCREEN_W/2-100,270,makecol(255,255,0),makecol(255,0,255),"APPUYER POUR JOUER ");
     textprintf_ex(screen,font,SCREEN_W/2,300,makecol(0,255,0),makecol(0,0,0),"  APPUYER SUR HAUT POUR MODE D'EMPLOI ");
     textprintf_ex(screen,font,SCREEN_W/2,330,makecol(0,0,255),makecol(0,0,0),"  APPUYER SUR BAS POUR REGLAGES ");
     textprintf_ex(screen,font,550,570,makecol(255,0,0),makecol(0,0,0),"  Appuyer sur ESC pour quitter ");
