@@ -9,6 +9,8 @@ void reglages();//affichage des reglages
 
 int main()
 {
+    BITMAP* decor;
+    BITMAP* page;
     srand(time(NULL));
     allegro_init();
     install_keyboard();
@@ -22,6 +24,19 @@ int main()
         exit(EXIT_FAILURE);
     }
     show_mouse(screen);
+
+     decor=load_bitmap("images/decor.bmp",NULL);
+    if (!decor)
+    {
+        allegro_message("pas pu trouver decor.bmp");
+        exit(EXIT_FAILURE);
+    }
+
+    page=create_bitmap(SCREEN_W,SCREEN_H);
+    clear_bitmap(page);
+
+    blit(decor,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
     menu();
     while ( !key[KEY_ESC] )
     {
@@ -41,6 +56,7 @@ void menu()
     textprintf_ex(screen,font,550,570,makecol(255,0,0),makecol(0,0,0),"  Appuyer sur ESC pour quitter ");
     while ( !key[KEY_ESC] )
     {
+
         if (mouse_b&1 && mouse_x>=SCREEN_W/2-100 && mouse_x<=SCREEN_W/2+100 && mouse_y<=285 && mouse_y>=255)
         {
             modedemploi();
