@@ -2,8 +2,8 @@
 #include <time.h>
 #include <math.h>
 
-void menu();//affichage du menu et sélection
-void modedemploi();//affichage des règles
+void menu();//affichage du menu et sï¿½lection
+void modedemploi();//affichage des rï¿½gles
 void reglages();//affichage des reglages
 
 
@@ -94,3 +94,4 @@ void reglages()
         }
     }
 }
+
