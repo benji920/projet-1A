@@ -45,6 +45,7 @@ void menu()
     BITMAP *mde;
     BITMAP *reglages;
     BITMAP *quitter;
+    BITMAP *page;
 
     clear(screen);
 
@@ -56,21 +57,23 @@ void menu()
     }
     blit(decor,screen,0,0, (SCREEN_W-decor->w)/2, (SCREEN_H-decor->h)/2, decor->w, decor->h);
 
-    jouer=load_bitmap("images/jouer.bmp",NULL);
+    jouer=load_bitmap("images/sprite1.bmp",NULL);
     if (!jouer)
     {
         allegro_message("pas pu trouver jouer.bmp");
         exit(EXIT_FAILURE);
     }
-    blit(jouer,screen,0,0, (SCREEN_W-jouer->w)/2, (SCREEN_H-jouer->h)/2-100, jouer->w, jouer->h);
+    //blit(jouer,screen,0,0, (SCREEN_W-jouer->w)/2, (SCREEN_H-jouer->h)/2-100, jouer->w, jouer->h);
+    draw_sprite(screen,jouer,(SCREEN_W-jouer->w)/2,0);
 
-    mde=load_bitmap("images/mde.bmp",NULL);
+    mde=load_bitmap("images/sprite2.bmp",NULL);
     if (!mde)
     {
         allegro_message("pas pu trouver mde.bmp");
         exit(EXIT_FAILURE);
     }
-    blit(mde,screen,0,0, (SCREEN_W-mde->w),0, mde->w, mde->h);
+    //blit(mde,screen,0,0, (SCREEN_W-mde->w),0, mde->w, mde->h);
+    draw_sprite(screen,mde,(SCREEN_W-jouer->w)/2-150,(SCREEN_H-jouer->h)/2+100);
 
     reglages=load_bitmap("images/reglages.bmp",NULL);
     if (!reglages)
