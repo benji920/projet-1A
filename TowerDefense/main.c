@@ -48,7 +48,7 @@ void menu()
 
     clear(screen);
 
-    decor=load_bitmap("images/decor.bmp",NULL);
+    decor=load_bitmap("images/decor1.bmp",NULL);
     if (!decor)
     {
         allegro_message("pas pu trouver decor.bmp");
