@@ -1,4 +1,5 @@
 #include <allegro.h>
+#include <stdio.h>
 #include <time.h>
 #include <math.h>
 
@@ -45,7 +46,6 @@ void menu()
     BITMAP *mde;
     BITMAP *reglages;
     BITMAP *quitter;
-    BITMAP *page;
     BITMAP *credits;
     BITMAP *jouer;
     BITMAP *hachette;
