@@ -28,10 +28,10 @@ int main()
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear_bitmap(page);
 
-    menu();
+
     while ( !key[KEY_ESC] )
     {
-
+menu();
     }
 
     return 0;
@@ -40,12 +40,15 @@ END_OF_MAIN();
 
 void menu()
 {
-    BITMAP *jouer;
+    BITMAP *towerdefense;
     BITMAP *decor;
     BITMAP *mde;
     BITMAP *reglages;
     BITMAP *quitter;
     BITMAP *page;
+    BITMAP *credits;
+    BITMAP *jouer;
+    BITMAP *hachette;
 
     clear(screen);
 
@@ -57,46 +60,79 @@ void menu()
     }
     blit(decor,screen,0,0, (SCREEN_W-decor->w)/2, (SCREEN_H-decor->h)/2, decor->w, decor->h);
 
-    jouer=load_bitmap("images/sprite1.bmp",NULL);
-    if (!jouer)
+    towerdefense=load_bitmap("images/sprite1.bmp",NULL);
+    if (!towerdefense)
     {
-        allegro_message("pas pu trouver jouer.bmp");
+        allegro_message("pas pu trouver towerdefense.bmp");
         exit(EXIT_FAILURE);
     }
-    //blit(jouer,screen,0,0, (SCREEN_W-jouer->w)/2, (SCREEN_H-jouer->h)/2-100, jouer->w, jouer->h);
-    draw_sprite(screen,jouer,(SCREEN_W-jouer->w)/2,0);
+    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
+    draw_sprite(screen,towerdefense,(SCREEN_W-towerdefense->w)/2,0);
 
-    mde=load_bitmap("images/sprite2.bmp",NULL);
+    mde=load_bitmap("images/sprite8.bmp",NULL);
     if (!mde)
     {
         allegro_message("pas pu trouver mde.bmp");
         exit(EXIT_FAILURE);
     }
     //blit(mde,screen,0,0, (SCREEN_W-mde->w),0, mde->w, mde->h);
-    draw_sprite(screen,mde,(SCREEN_W-jouer->w)/2-150,(SCREEN_H-jouer->h)/2+100);
+    draw_sprite(screen,mde,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+250);
 
-    reglages=load_bitmap("images/reglages.bmp",NULL);
+    reglages=load_bitmap("images/sprite_reglages.bmp",NULL);
     if (!reglages)
     {
         allegro_message("pas pu trouver reglages.bmp");
         exit(EXIT_FAILURE);
     }
-    blit(reglages,screen,0,0,0,0, reglages->w, reglages->h);
+    //blit(reglages,screen,0,0,0,0, reglages->w, reglages->h);
+    draw_sprite(screen,reglages,(SCREEN_W-towerdefense->w)/2+200,(SCREEN_H-towerdefense->h)/2+100);
 
-    quitter=load_bitmap("images/quitter.bmp",NULL);
+    quitter=load_bitmap("images/sprite5.bmp",NULL);
     if (!quitter)
     {
         allegro_message("pas pu trouver quitter.bmp");
         exit(EXIT_FAILURE);
     }
-    blit(quitter,screen,0,0, (SCREEN_W-quitter->w),(SCREEN_H-quitter->h), quitter->w, quitter->h);
+    //blit(quitter,screen,0,0, (SCREEN_W-quitter->w),(SCREEN_H-quitter->h), quitter->w, quitter->h);
+    draw_sprite(screen,quitter,(SCREEN_W-quitter->w),(SCREEN_H-quitter->h));
 
+     credits=load_bitmap("images/spritecredits.bmp",NULL);
+    if (!credits)
+    {
+        allegro_message("pas pu trouver towerdefense.bmp");
+        exit(EXIT_FAILURE);
+    }
+    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
+    draw_sprite(screen,credits,(SCREEN_W-towerdefense->w)/2+200,(SCREEN_H-towerdefense->h)/2+250);
 
+    jouer=load_bitmap("images/sprite2.bmp",NULL);
+    if (!jouer)
+    {
+        allegro_message("pas pu trouver towerdefense.bmp");
+        exit(EXIT_FAILURE);
+    }
+    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
+    draw_sprite(screen,jouer,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+100);
+
+    hachette=load_bitmap("images/hachette.bmp",NULL);
+    if (!hachette)
+    {
+        allegro_message("pas pu trouver hachette.bmp");
+        exit(EXIT_FAILURE);
+    }
+    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
+    draw_sprite(screen,hachette,100,200);
 
 
     while ( !key[KEY_ESC] )
     {
-        if (mouse_b&1 && mouse_x>=(SCREEN_W-jouer->w)/2 && mouse_x<=(SCREEN_W+jouer->w)/2 && mouse_y>=(SCREEN_H-jouer->h)/2-100 && mouse_y<=(SCREEN_H+jouer->h)/2-100)
+        textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+
+
+
+    draw_sprite(screen,hachette,100,200);
+
+        if (mouse_b&1 && mouse_x>=(SCREEN_W-towerdefense->w)/2 && mouse_x<=(SCREEN_W+towerdefense->w)/2 && mouse_y>=(SCREEN_H-towerdefense->h)/2-100 && mouse_y<=(SCREEN_H+towerdefense->h)/2-100)
         {
             jeux();
         }
