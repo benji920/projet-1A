@@ -1,4 +1,5 @@
 #include <allegro.h>
+#include <stdio.h>
 #include <time.h>
 #include <math.h>
 
@@ -48,7 +49,6 @@ void menu()
     BITMAP *mde;
     BITMAP *reglages;
     BITMAP *quitter;
-    BITMAP *page;
     BITMAP *credits;
     BITMAP *jouer;
 
@@ -243,15 +243,7 @@ void reglage()
 
 void jeux()
 {
-    clear(screen);
-    textprintf_ex(screen,font,550,570,makecol(255,0,0),makecol(0,0,0)," JEUX Appuyer sur DROITE pour revenir au menu ");
-    while ( !key[KEY_ESC] )
-    {
-        if (key[KEY_RIGHT])
-        {
-            menu();
-        }
-    }
+
 }
 
 
