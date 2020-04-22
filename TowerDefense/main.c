@@ -42,24 +42,28 @@ END_OF_MAIN();
 void menu()
 {
     BITMAP *towerdefense;
+    BITMAP *hachette;
+
+
     BITMAP *decor;
     BITMAP *mde;
     BITMAP *reglages;
     BITMAP *quitter;
     BITMAP *credits;
     BITMAP *jouer;
-    BITMAP *hachette;
 
+
+    page=create_bitmap(SCREEN_W,SCREEN_H);
     clear(screen);
 
-    decor=load_bitmap("images/decor1.bmp",NULL);
+    decor=load_bitmap("images/decor20.bmp",NULL);
     if (!decor)
     {
         allegro_message("pas pu trouver decor.bmp");
         exit(EXIT_FAILURE);
     }
-    blit(decor,screen,0,0, (SCREEN_W-decor->w)/2, (SCREEN_H-decor->h)/2, decor->w, decor->h);
 
+/*
     towerdefense=load_bitmap("images/sprite1.bmp",NULL);
     if (!towerdefense)
     {
@@ -113,7 +117,7 @@ void menu()
     }
     //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
     draw_sprite(screen,jouer,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+100);
-
+    */
     hachette=load_bitmap("images/hachette.bmp",NULL);
     if (!hachette)
     {
@@ -121,16 +125,19 @@ void menu()
         exit(EXIT_FAILURE);
     }
     //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,hachette,100,200);
+    //draw_sprite(screen,hachette,100,200);
 
 
     while ( !key[KEY_ESC] )
     {
         textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+        blit(decor,page,0,0, 0,0, decor->w, decor->h);
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
-
-
-    draw_sprite(screen,hachette,100,200);
+        if(mouse_x<=456 && mouse_x>=215 && mouse_y<=430 && mouse_y>=350)
+    {
+        draw_sprite(screen,hachette,100,200);
+    }
 
         if (mouse_b&1 && mouse_x>=(SCREEN_W-towerdefense->w)/2 && mouse_x<=(SCREEN_W+towerdefense->w)/2 && mouse_y>=(SCREEN_H-towerdefense->h)/2-100 && mouse_y<=(SCREEN_H+towerdefense->h)/2-100)
         {
@@ -148,6 +155,7 @@ void menu()
         {
             ;
         }
+
     }
 }
 
@@ -237,4 +245,5 @@ void jeux()
 {
 
 }
+
 
