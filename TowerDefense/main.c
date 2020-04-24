@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#define NIMAGE 9
 
 void menu();//affichage du menu et s�lection
 void modedemploi();//affichage des r�gles
@@ -33,7 +34,7 @@ int main()
 
     while ( !key[KEY_ESC] )
     {
-menu();
+    menu();
     }
 
     return 0;
@@ -252,6 +253,132 @@ void reglage()
 void jeux()
 {
 
-}
+    // LES INFORMATIONS SUIVANTES VONT ALLER DANS UNE STRUCTURE ACTEUR
+    //   ( pour pouvoir gérer plusieurs sprites animés )
 
+    // Données géométriques de l'animation
+    int x,y;
+    int dx,dy;
+    int tx,ty;
+
+    // Pour pouvoir avancer très lentement on avance moins souvent
+    //  ( ajouter dx une fois tous les tmpdx, initialement à chaque fois )
+    int cptdx=0, tmpdx=1;
+
+    // Gestion de l'enchainement des images de la séquence
+    // indice de l'image courante
+    int imgcourante=0;
+    // on passe à l'image suivante une fois tous les tmpimg
+    int cptimg=0, tmpimg=4;
+
+    // Séquence d'animation
+    BITMAP *img[NIMAGE];
+
+
+
+    // AUTRES VARIABLES NE CONCERNANT PAS SPECIFIQUEMENT LE CHAT
+
+    // BITMAP servant de buffer d'affichage (double buffer)
+
+    // Image de fond
+    BITMAP *decor;
+
+    // La tempo générale (fonction rest) sera réglable
+    int tempoglobale=10;
+
+    // Pour charger la séquence
+    int i;
+    char nomfichier[256];
+
+
+    // Lancer allegro et le mode graphique
+
+
+    // charger image de fond
+    decor=load_bitmap("images/decor1.bmp",NULL);
+    if (!decor)
+    {
+        allegro_message("pas pu trouver images/decor1.bmp");
+        exit(EXIT_FAILURE);
+    }
+
+    // charger les images de la séquence d'animation
+    for (i=0;i<NIMAGE;i++)
+    {
+        // sprintf permet de faire un printf dans une chaine
+        sprintf(nomfichier,"zombiemarche/Walk (%d).bmp",i);
+
+        img[i] = load_bitmap(nomfichier,NULL);
+        if (!img[i]){
+            allegro_message("pas pu trouver %s",nomfichier);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // initialisation des données du chat
+
+    tx = img[0]->w; // pour la taille on se base sur la 1ère image de la séquence
+    ty = img[0]->h;
+    x = 0;
+    y = SCREEN_H-2*ty;
+    dx = 5;
+    dy = 0;
+
+    cptdx=0;
+    tmpdx=1;
+
+    imgcourante=0;
+    cptimg=0;
+    tmpimg=5;
+
+
+    // Boucle d'animation (pas d'interaction)
+    while (!key[KEY_ESC])
+    {
+        // effacer buffer en appliquant décor  (pas de clear_bitmap)
+        blit(decor,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        // appel d'un sous programme de réglage interactif des parametres
+        // ( seulement utile sur cet exemple ou pour du debug )
+
+
+        // gestion déplacement du chat
+        if ( (x<0 && dx<0) || (x+tx>SCREEN_W && dx>0) )
+            dx = -dx;
+
+        cptdx++;
+        if (cptdx>=tmpdx){
+            cptdx=0;
+            x+=dx;
+        }
+
+        y+=dy;
+
+        // gestion enchainement des images
+        // incrémenter imgcourante une fois sur tmpimg
+        cptimg++;
+        if (cptimg>=tmpimg){
+            cptimg=0;
+
+            imgcourante++;
+
+            // quand l'indice de l'image courante arrive à NIMAGE
+            // on recommence la séquence à partir de 0
+            if (imgcourante>=NIMAGE)
+                imgcourante=0;
+        }
+
+        // afficher l'image courante du chat (selon le sens...)
+        if (dx>=0)
+            draw_sprite(screen,img[imgcourante],x,y);
+        else
+            draw_sprite_h_flip(screen,img[imgcourante],x,y);
+
+        // affichage du buffer à l'écrane
+
+
+        // la petite pause...
+        rest(tempoglobale);
+    }
+}
 

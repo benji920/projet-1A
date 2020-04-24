@@ -5,10 +5,9 @@
 	<time.h>
 	<math.h>
 
-
-1587481925 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
-
+1587725296 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
 	<allegro.h>
+	<stdio.h>
 	<time.h>
 	<math.h>
 
