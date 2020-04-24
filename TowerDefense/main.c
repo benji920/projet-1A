@@ -3,11 +3,39 @@
 #include <time.h>
 #include <math.h>
 #define NIMAGE 9
+#define NACTEUR 5
+
 
 void menu();//affichage du menu et s�lection
 void modedemploi();//affichage des r�gles
 void reglage();//affichage des reglages
 void jeux();//lancement du jeux
+void jouer2();
+
+typedef struct acteur
+{
+    // coordonnée (du coin sup. gauche)
+    int posx, posy;
+
+    // vecteur deplacement
+    int depx, depy;
+
+    // tailles : horizontal/vertical
+    int tx,ty;
+
+    // couleur de l'élément graphique
+    int couleur;
+
+    // type :   0 rectangle   1 ellipse   2 triangle
+    //          ( codes arbitraires : convention )
+    int type;
+
+    // comportement :   0 inertie     1 inertie + changements aléatoires
+    //                  ( codes arbitraires : convention )
+    int comportement;
+
+} t_acteur;
+
 
 
 int main()
@@ -150,7 +178,7 @@ void menu()
 
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=350 && mouse_y<=420)
         {
-            jeux();
+            jouer2();
         }
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=500 && mouse_y<=571)
         {
@@ -370,9 +398,9 @@ void jeux()
 
         // afficher l'image courante du chat (selon le sens...)
         if (dx>=0)
-            draw_sprite(screen,img[imgcourante],x,y);
-        else
             draw_sprite_h_flip(screen,img[imgcourante],x,y);
+        else
+            draw_sprite(screen,img[imgcourante],x,y);
 
         // affichage du buffer à l'écrane
 
@@ -380,5 +408,157 @@ void jeux()
         // la petite pause...
         rest(tempoglobale);
     }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void jouer2()
+{
+  // Le tableau regroupant tous les acteurs
+    // c'est un tableau de pointeurs sur structures t_acteurs
+    t_acteur * mesActeurs[NACTEUR];
+
+    // BITMAP servant de buffer d'affichage (double buffer)
+    BITMAP *page;
+
+
+
+
+
+    // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
+    page=create_bitmap(SCREEN_W,SCREEN_H);
+    clear_bitmap(page);
+
+
+    // Initialisation aléatoire des paramètres des acteurs :
+    // remplir le tableau avec des acteurs alloués et initialisés
+    remplirTabActeurs(mesActeurs);
+
+
+    // Boucle d'animation (pas d'interaction)
+    while (!key[KEY_ESC])
+    {
+        // 1) EFFACER POSITIONs ACTUELLEs SUR LE BUFFER
+        //    ON EFFACE TOUT LE BUFFER ! (c'est plus simple)
+        clear_bitmap(page);
+
+         // 2) DETERMINER NOUVELLEs POSITIONs
+        actualiserTabActeurs(mesActeurs);
+
+        // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
+        dessinerTabActeurs(page,mesActeurs);
+
+        // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+
+        // 5) ON FAIT UNE PETITE PAUSE à chaque fois sinon ça va trop vite...
+        rest(20);
+    }
+
+    return 0;
+}
+
+// Allouer et initialiser (aléatoirement) un acteur
+t_acteur * creerActeur()
+{
+    // pointeur sur l'acteur qui sera créé (et retourné)
+    t_acteur *acteur;
+
+    // Création (allocation)
+    acteur = (t_acteur *)malloc(1*sizeof(t_acteur));
+
+    // Initialisation
+
+    acteur->tx = rand()%40+40;
+    acteur->ty = rand()%40+40;
+
+    // Position aléatoire (on tient compte de la taille...)
+    acteur->posx = 1050;
+    acteur->posy = rand()%(SCREEN_H - acteur->ty);
+
+    // Vitesse aléatoire symétrique
+    // avec composantes horizontales et verticales non nulles
+
+        acteur->depx = -3;
+        acteur->depy = 0;
+
+
+    // Type au hasard 0, 1, 2
+    acteur->type = 0;
+
+    // Comportement au hasard (0 ou 1)
+    acteur->comportement = 0;
+
+    // Pour mieux visualiser on associe 2 domiantes couleurs distinctes
+    // aux 2 comportement (mais ce n'est pas obligé)
+    if ( acteur->comportement == 0 )
+        acteur->couleur = makecol(rand()%64+196,rand()%40+40,rand()%40+40);
+    else
+        acteur->couleur = makecol(rand()%40+40,rand()%64+196,rand()%40+40);
+
+    // on retourne cet acteur fraichement créé
+    // ( en fait on retourne le POINTEUR sur lui )
+    return acteur;
+}
+
+// Remplir un tableau avec des (pointeurs sur) acteurs créés
+void remplirTabActeurs(t_acteur * tab[NACTEUR])
+{
+    int i;
+
+    // On "accroche" NACTEUR nouveaux acteurs
+    // à chaque case du tableau
+    for (i=0;i<NACTEUR;i++)
+        tab[i]=creerActeur();
+}
+
+
+// Actualiser un acteur (bouger ...)
+void actualiserActeur(t_acteur *acteur)
+{
+
+    // calculer nouvelle position
+    // nouvelle position = position actuelle + deplacement
+    acteur->posx = acteur->posx + acteur->depx;
+    acteur->posy = acteur->posy + acteur->depy;
+}
+
+// Gérer l'évolution de l'ensemble des acteurs
+void actualiserTabActeurs(t_acteur * tab[NACTEUR])
+{
+    int i;
+
+    for (i=0;i<NACTEUR;i++)
+        actualiserActeur(tab[i]);
+
+}
+
+
+// Dessiner un acteur sur une bitmap bmp
+void dessinerActeur(BITMAP *bmp, t_acteur *acteur)
+{
+    // Prise en compte du type
+    // 0 rectangle   1 ellipse   2 triangle
+    switch(acteur->type)
+    {
+        case 0:
+            rectfill(bmp,acteur->posx,acteur->posy,acteur->posx+acteur->tx,acteur->posy+acteur->ty,acteur->couleur);
+            break;
+        case 1:
+            ellipsefill(bmp,acteur->posx+acteur->tx/2,acteur->posy+acteur->ty/2,acteur->tx/2,acteur->ty/2,acteur->couleur);
+            break;
+        case 2:
+            triangle(bmp,acteur->posx,acteur->posy+acteur->ty,acteur->posx+acteur->tx/2,acteur->posy,acteur->posx+acteur->tx,acteur->posy+acteur->ty,acteur->couleur);
+            break;
+    }
+
+}
+
+// Dessiner sur une bitmap l'ensemble des acteurs
+void dessinerTabActeurs(BITMAP *bmp,t_acteur * tab[NACTEUR])
+{
+    int i;
+
+    for (i=0;i<NACTEUR;i++)
+        dessinerActeur(bmp,tab[i]);
+
 }
 
