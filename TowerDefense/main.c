@@ -140,28 +140,27 @@ void menu()
         draw_sprite(page,hachette,530,360);
     }
 
-    if(mouse_x<=456 && mouse_x>=200 && mouse_y<=430 && mouse_y>=350)
+    if(mouse_x<=456 && mouse_x>=200 && mouse_y<=420 && mouse_y>=350)
     {
         draw_sprite(page,hachette,110,360);
+
     }
 
 
-        if (mouse_b&1 && mouse_x>=(SCREEN_W-towerdefense->w)/2 && mouse_x<=(SCREEN_W+towerdefense->w)/2 && mouse_y>=(SCREEN_H-towerdefense->h)/2-100 && mouse_y<=(SCREEN_H+towerdefense->h)/2-100)
+        if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=350 && mouse_y<=420)
         {
             jeux();
         }
-        if (mouse_b&1 && mouse_x>=(SCREEN_W-mde->w) && mouse_x<=(SCREEN_W+mde->w) && mouse_y>=0 && mouse_y<=(mde->w))
+        if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=500 && mouse_y<=571)
         {
             modedemploi();
         }
-        if (mouse_b&1 && mouse_x>=0 && mouse_x<=(reglages->w) && mouse_y>=0 && mouse_y<=(reglages->w))
-        {
-            reglage();
-        }
+
         if (mouse_b&1 && mouse_x>=(SCREEN_W-quitter->w) && mouse_x<=(SCREEN_W+quitter->w) && mouse_y>=(SCREEN_H-quitter->h) && mouse_y<=(SCREEN_H+quitter->h))
         {
             ;
         }
+
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
         rest(20);
