@@ -11,11 +11,12 @@ void jeux();//lancement du jeux
 
 int main()
 {
-    BITMAP *page;
+
     srand(time(NULL));
     allegro_init();
     install_keyboard();
     install_mouse();
+    BITMAP *page;
 
     set_color_depth(desktop_color_depth());
     if (set_gfx_mode(GFX_AUTODETECT_WINDOWED,1024,768,0,0)!=0)
@@ -51,12 +52,13 @@ void menu()
     BITMAP *quitter;
     BITMAP *credits;
     BITMAP *jouer;
+    BITMAP *page;
 
 
     page=create_bitmap(SCREEN_W,SCREEN_H);
-    clear(screen);
+    clear(page);
 
-    decor=load_bitmap("images/decor20.bmp",NULL);
+    decor=load_bitmap("images/decor31.bmp",NULL);
     if (!decor)
     {
         allegro_message("pas pu trouver decor.bmp");
@@ -131,13 +133,18 @@ void menu()
     while ( !key[KEY_ESC] )
     {
         textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
-        blit(decor,page,0,0, 0,0, decor->w, decor->h);
-        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+        blit(decor,page,0,0,0,0, SCREEN_W, SCREEN_H);
 
-        if(mouse_x<=456 && mouse_x>=215 && mouse_y<=430 && mouse_y>=350)
+    if(mouse_x<=850 && mouse_x>=600 && mouse_y<=420 && mouse_y>=350)
     {
-        draw_sprite(screen,hachette,100,200);
+        draw_sprite(page,hachette,530,360);
     }
+
+    if(mouse_x<=456 && mouse_x>=200 && mouse_y<=430 && mouse_y>=350)
+    {
+        draw_sprite(page,hachette,110,360);
+    }
+
 
         if (mouse_b&1 && mouse_x>=(SCREEN_W-towerdefense->w)/2 && mouse_x<=(SCREEN_W+towerdefense->w)/2 && mouse_y>=(SCREEN_H-towerdefense->h)/2-100 && mouse_y<=(SCREEN_H+towerdefense->h)/2-100)
         {
@@ -155,7 +162,9 @@ void menu()
         {
             ;
         }
+        blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
+        rest(20);
     }
 }
 
@@ -167,7 +176,7 @@ void modedemploi()
 
     clear(screen);
 
-    decor=load_bitmap("images/decor.bmp",NULL);
+    decor=load_bitmap("images/decor31.bmp",NULL);
     if (!decor)
     {
         allegro_message("pas pu trouver decor.bmp");
