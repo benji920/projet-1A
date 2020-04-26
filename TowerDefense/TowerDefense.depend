@@ -1,12 +1,13 @@
 # depslib dependency file v1.0
-1587669631 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
+1587727876 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
 	<allegro.h>
 	<stdio.h>
 	<time.h>
 	<math.h>
 
-1587569180 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
+1587725296 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
 	<allegro.h>
+	<stdio.h>
 	<time.h>
 	<math.h>
 
