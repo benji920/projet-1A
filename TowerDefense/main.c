@@ -123,61 +123,7 @@ void menu()
         exit(EXIT_FAILURE);
     }
 
-/*
-    towerdefense=load_bitmap("images/sprite1.bmp",NULL);
-    if (!towerdefense)
-    {
-        allegro_message("pas pu trouver towerdefense.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,towerdefense,(SCREEN_W-towerdefense->w)/2,0);
 
-    mde=load_bitmap("images/sprite8.bmp",NULL);
-    if (!mde)
-    {
-        allegro_message("pas pu trouver mde.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(mde,screen,0,0, (SCREEN_W-mde->w),0, mde->w, mde->h);
-    draw_sprite(screen,mde,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+250);
-
-    reglages=load_bitmap("images/sprite_reglages.bmp",NULL);
-    if (!reglages)
-    {
-        allegro_message("pas pu trouver reglages.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(reglages,screen,0,0,0,0, reglages->w, reglages->h);
-    draw_sprite(screen,reglages,(SCREEN_W-towerdefense->w)/2+200,(SCREEN_H-towerdefense->h)/2+100);
-
-    quitter=load_bitmap("images/sprite5.bmp",NULL);
-    if (!quitter)
-    {
-        allegro_message("pas pu trouver quitter.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(quitter,screen,0,0, (SCREEN_W-quitter->w),(SCREEN_H-quitter->h), quitter->w, quitter->h);
-    draw_sprite(screen,quitter,(SCREEN_W-quitter->w),(SCREEN_H-quitter->h));
-
-     credits=load_bitmap("images/spritecredits.bmp",NULL);
-    if (!credits)
-    {
-        allegro_message("pas pu trouver towerdefense.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,credits,(SCREEN_W-towerdefense->w)/2+200,(SCREEN_H-towerdefense->h)/2+250);
-
-    jouer=load_bitmap("images/sprite2.bmp",NULL);
-    if (!jouer)
-    {
-        allegro_message("pas pu trouver towerdefense.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,jouer,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+100);
-    */
     hachette=load_bitmap("images/hachette.bmp",NULL);
     if (!hachette)
     {
@@ -205,8 +151,14 @@ void menu()
         draw_sprite(page,hachette,110,360);
 
     }
-
-
+    if(mouse_x<=456 && mouse_x>=200 && mouse_y<=570 && mouse_y>=500)
+    {
+        draw_sprite(page,hachette,110,510);
+    }
+    if(mouse_x<=880 && mouse_x>=600 && mouse_y<=570 && mouse_y>=500)
+    {
+        draw_sprite(page,hachette,530,510);
+    }
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=350 && mouse_y<=420)
         {
             jouer2();
@@ -441,11 +393,11 @@ void jouer2()
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[NACTEUR];
     int compteur;
-    t_acteur* acteur[100];
+
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
     BITMAP *img[NIMAGE];
- int i;
+ int i=0;
     char nomfichier[256];
 
     // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
@@ -464,7 +416,9 @@ void jouer2()
         }
     }
 
-
+    int imgcourante=0;
+    // on passe à l'image suivante une fois tous les tmpimg
+    int cptimg=0, tmpimg=4;
     remplirTabActeurs(mesActeurs);
 
 
@@ -481,7 +435,23 @@ void jouer2()
         actualiserTabActeurs(mesActeurs);
 
         // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
-        dessinerTabActeurs(page,mesActeurs,img);
+       //dessinerTabActeurs(page,mesActeurs,img);
+
+        rectfill(page,mesActeurs[2]->posx,mesActeurs[2]->posy,mesActeurs[2]->posx+mesActeurs[2]->tx,mesActeurs[2]->posy+mesActeurs[2]->ty,mesActeurs[2]->couleur);
+
+           cptimg++;
+        if (cptimg>=tmpimg){
+            cptimg=0;
+
+            imgcourante++;
+
+            // quand l'indice de l'image courante arrive à NIMAGE
+            // on recommence la séquence à partir de 0
+            if (imgcourante>=NIMAGE)
+                imgcourante=0;
+        }
+
+            draw_sprite(page,img[imgcourante], mesActeurs[2]->posx,mesActeurs[2]->posy);
 
         // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
@@ -570,27 +540,4 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 }
 
 
-// Dessiner un acteur sur une bitmap bmp
-void dessinerActeur(BITMAP *bmp, t_acteur *acteur)
-{
-
-
-            rectfill(bmp,acteur->posx,acteur->posy,acteur->posx+acteur->tx,acteur->posy+acteur->ty,acteur->couleur);
-
-
-
-
-
-
-}
-
-// Dessiner sur une bitmap l'ensemble des acteurs
-void dessinerTabActeurs(BITMAP *bmp,t_acteur * tab[NACTEUR])
-{
-    int i;
-
-    for (i=0;i<NACTEUR;i++)
-        dessinerActeur(bmp,tab[i]);
-
-}
 
