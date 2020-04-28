@@ -4,6 +4,7 @@
 #include <math.h>
 #define NIMAGE 9
 #define NACTEUR 5
+#define NSEQUENCE 6
 
 
 void menu();//affichage du menu et s�lection
@@ -11,6 +12,15 @@ void modedemploi();//affichage des r�gles
 void reglage();//affichage des reglages
 void jeux();//lancement du jeux
 void jouer2();
+
+typedef struct sequence
+{
+    char *nomSource; // nom du fichier image contenant la séquence
+    int nimg;        // nombre d'images dans la séquence
+    int tx,ty;       // largeur et hauteur des images de la séquence
+    int ncol;        // nbr images cotes à cotes horizontalement dans le fichier image
+    BITMAP **img;    // tableau de pointeurs pour indiquer les images
+} t_sequence;
 
 typedef struct acteur
 {
@@ -34,7 +44,22 @@ typedef struct acteur
     //                  ( codes arbitraires : convention )
     int comportement;
 
+    int imgcourante; // indice de l'image courante
+    int tmpimg;      // ralentir séquence (image suivante 1 fois sur tmpimg)
+    int cptimg;
+
 } t_acteur;
+
+t_sequence tabSequences[NSEQUENCE] =
+{
+        //          nomSource           , nimg,  tx,  ty, ncol
+        { "images/dragon/dragon.bmp"    ,    6, 128,  64,    3 },
+        { "images/dragon/poisson.bmp"   ,    3,  64,  32,    3 },
+        { "images/dragon/crabe.bmp"     ,    4,  64,  32,    4 },
+        { "images/dragon/abeille.bmp"   ,    6,  50,  40,    6 },
+        { "images/dragon/moustique.bmp" ,    6,  50,  40,    6 },
+        { "images/dragon/serpent.bmp"   ,    7, 100,  50,    4 }
+};
 
 
 
@@ -82,6 +107,10 @@ void menu()
     BITMAP *credits;
     BITMAP *jouer;
     BITMAP *page;
+       BITMAP *img[NIMAGE];
+
+       char nomfichier[256];
+       int i;
 
 
     page=create_bitmap(SCREEN_W,SCREEN_H);
@@ -94,61 +123,7 @@ void menu()
         exit(EXIT_FAILURE);
     }
 
-/*
-    towerdefense=load_bitmap("images/sprite1.bmp",NULL);
-    if (!towerdefense)
-    {
-        allegro_message("pas pu trouver towerdefense.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,towerdefense,(SCREEN_W-towerdefense->w)/2,0);
 
-    mde=load_bitmap("images/sprite8.bmp",NULL);
-    if (!mde)
-    {
-        allegro_message("pas pu trouver mde.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(mde,screen,0,0, (SCREEN_W-mde->w),0, mde->w, mde->h);
-    draw_sprite(screen,mde,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+250);
-
-    reglages=load_bitmap("images/sprite_reglages.bmp",NULL);
-    if (!reglages)
-    {
-        allegro_message("pas pu trouver reglages.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(reglages,screen,0,0,0,0, reglages->w, reglages->h);
-    draw_sprite(screen,reglages,(SCREEN_W-towerdefense->w)/2+200,(SCREEN_H-towerdefense->h)/2+100);
-
-    quitter=load_bitmap("images/sprite5.bmp",NULL);
-    if (!quitter)
-    {
-        allegro_message("pas pu trouver quitter.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(quitter,screen,0,0, (SCREEN_W-quitter->w),(SCREEN_H-quitter->h), quitter->w, quitter->h);
-    draw_sprite(screen,quitter,(SCREEN_W-quitter->w),(SCREEN_H-quitter->h));
-
-     credits=load_bitmap("images/spritecredits.bmp",NULL);
-    if (!credits)
-    {
-        allegro_message("pas pu trouver towerdefense.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,credits,(SCREEN_W-towerdefense->w)/2+200,(SCREEN_H-towerdefense->h)/2+250);
-
-    jouer=load_bitmap("images/sprite2.bmp",NULL);
-    if (!jouer)
-    {
-        allegro_message("pas pu trouver towerdefense.bmp");
-        exit(EXIT_FAILURE);
-    }
-    //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
-    draw_sprite(screen,jouer,(SCREEN_W-towerdefense->w)/2-150,(SCREEN_H-towerdefense->h)/2+100);
-    */
     hachette=load_bitmap("images/hachette.bmp",NULL);
     if (!hachette)
     {
@@ -157,6 +132,8 @@ void menu()
     }
     //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
     //draw_sprite(screen,hachette,100,200);
+
+
 
 
     while ( !key[KEY_ESC] )
@@ -174,8 +151,14 @@ void menu()
         draw_sprite(page,hachette,110,360);
 
     }
-
-
+    if(mouse_x<=456 && mouse_x>=200 && mouse_y<=570 && mouse_y>=500)
+    {
+        draw_sprite(page,hachette,110,510);
+    }
+    if(mouse_x<=880 && mouse_x>=600 && mouse_y<=570 && mouse_y>=500)
+    {
+        draw_sprite(page,hachette,530,510);
+    }
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=350 && mouse_y<=420)
         {
             jouer2();
@@ -392,21 +375,15 @@ void jeux()
 
             // quand l'indice de l'image courante arrive à NIMAGE
             // on recommence la séquence à partir de 0
-            if (imgcourante>=NIMAGE)
-                imgcourante=0;
-        }
 
-        // afficher l'image courante du chat (selon le sens...)
-        if (dx>=0)
-            draw_sprite_h_flip(screen,img[imgcourante],x,y);
-        else
-            draw_sprite(screen,img[imgcourante],x,y);
+
 
         // affichage du buffer à l'écrane
 
 
         // la petite pause...
         rest(tempoglobale);
+    }
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -415,27 +392,41 @@ void jouer2()
   // Le tableau regroupant tous les acteurs
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[NACTEUR];
+    int compteur;
 
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
-
-
-
-
+    BITMAP *img[NIMAGE];
+ int i=0;
+    char nomfichier[256];
 
     // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear_bitmap(page);
 
+    for (i=0;i<NIMAGE;i++)
+    {
+        // sprintf permet de faire un printf dans une chaine
+        sprintf(nomfichier,"zombiemarche/Walk (%d).bmp",i);
 
-    // Initialisation aléatoire des paramètres des acteurs :
-    // remplir le tableau avec des acteurs alloués et initialisés
+        img[i] = load_bitmap(nomfichier,NULL);
+        if (!img[i]){
+            allegro_message("pas pu trouver %s",nomfichier);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    int imgcourante=0;
+    // on passe à l'image suivante une fois tous les tmpimg
+    int cptimg=0, tmpimg=4;
     remplirTabActeurs(mesActeurs);
 
 
     // Boucle d'animation (pas d'interaction)
     while (!key[KEY_ESC])
     {
+
+
         // 1) EFFACER POSITIONs ACTUELLEs SUR LE BUFFER
         //    ON EFFACE TOUT LE BUFFER ! (c'est plus simple)
         clear_bitmap(page);
@@ -444,7 +435,23 @@ void jouer2()
         actualiserTabActeurs(mesActeurs);
 
         // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
-        dessinerTabActeurs(page,mesActeurs);
+       //dessinerTabActeurs(page,mesActeurs,img);
+
+        rectfill(page,mesActeurs[2]->posx,mesActeurs[2]->posy,mesActeurs[2]->posx+mesActeurs[2]->tx,mesActeurs[2]->posy+mesActeurs[2]->ty,mesActeurs[2]->couleur);
+
+           cptimg++;
+        if (cptimg>=tmpimg){
+            cptimg=0;
+
+            imgcourante++;
+
+            // quand l'indice de l'image courante arrive à NIMAGE
+            // on recommence la séquence à partir de 0
+            if (imgcourante>=NIMAGE)
+                imgcourante=0;
+        }
+
+            draw_sprite(page,img[imgcourante], mesActeurs[2]->posx,mesActeurs[2]->posy);
 
         // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
@@ -466,6 +473,7 @@ t_acteur * creerActeur()
     acteur = (t_acteur *)malloc(1*sizeof(t_acteur));
 
     // Initialisation
+    acteur->imgcourante=0;
 
     acteur->tx = rand()%40+40;
     acteur->ty = rand()%40+40;
@@ -532,33 +540,4 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 }
 
 
-// Dessiner un acteur sur une bitmap bmp
-void dessinerActeur(BITMAP *bmp, t_acteur *acteur)
-{
-    // Prise en compte du type
-    // 0 rectangle   1 ellipse   2 triangle
-    switch(acteur->type)
-    {
-        case 0:
-            rectfill(bmp,acteur->posx,acteur->posy,acteur->posx+acteur->tx,acteur->posy+acteur->ty,acteur->couleur);
-            break;
-        case 1:
-            ellipsefill(bmp,acteur->posx+acteur->tx/2,acteur->posy+acteur->ty/2,acteur->tx/2,acteur->ty/2,acteur->couleur);
-            break;
-        case 2:
-            triangle(bmp,acteur->posx,acteur->posy+acteur->ty,acteur->posx+acteur->tx/2,acteur->posy,acteur->posx+acteur->tx,acteur->posy+acteur->ty,acteur->couleur);
-            break;
-    }
-
-}
-
-// Dessiner sur une bitmap l'ensemble des acteurs
-void dessinerTabActeurs(BITMAP *bmp,t_acteur * tab[NACTEUR])
-{
-    int i;
-
-    for (i=0;i<NACTEUR;i++)
-        dessinerActeur(bmp,tab[i]);
-
-}
 
