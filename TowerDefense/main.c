@@ -14,6 +14,7 @@ void jeux();//lancement du jeux
 void jouer2();
 void credit();
 
+
 typedef struct sequence
 {
     char *nomSource; // nom du fichier image contenant la séquence
@@ -103,8 +104,6 @@ void menu()
 {
     BITMAP *towerdefense;
     BITMAP *hachette;
-
-
     BITMAP *decor;
     BITMAP *mde;
     BITMAP *reglages;
@@ -112,7 +111,7 @@ void menu()
     BITMAP *credits;
     BITMAP *jouer;
     BITMAP *page;
-       BITMAP *img[NIMAGE];
+    BITMAP *img[NIMAGE];
 
        char nomfichier[256];
        int i;
@@ -120,6 +119,10 @@ void menu()
 
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear(page);
+
+    SAMPLE *sample;
+sample=load_wav("son1.wav");
+install_sound(DIGI_AUTODETECT,MIDI_AUTODETECT,NULL);
 
     decor=load_bitmap("images/decor31.bmp",NULL);
     if (!decor)
@@ -138,11 +141,12 @@ void menu()
     //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
     //draw_sprite(screen,hachette,100,200);
 
-
+play_sample(sample,100,100,1000,0);
 
 
     while ( !key[KEY_ESC] )
     {
+
 
         blit(decor,page,0,0,0,0, SCREEN_W, SCREEN_H);
         textprintf_ex(page,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
@@ -488,13 +492,7 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
 }
 
-void son()
-{
-SAMPLE *sample;
-sample=load_wav("son1.wav");
 
-
-}
 
 
 
