@@ -488,6 +488,14 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
 }
 
+void son()
+{
+SAMPLE *sample;
+sample=load_wav("son1.wav");
+
+
+}
+
 
 
 
