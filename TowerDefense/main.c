@@ -48,7 +48,10 @@ typedef struct acteur
     int imgcourante; // indice de l'image courante
     int tmpimg;      // ralentir séquence (image suivante 1 fois sur tmpimg)
     int cptimg;
+
     int etat;
+
+    int type;
 
 } t_acteur;
 
@@ -284,12 +287,13 @@ void jouer2()
 {
   // Le tableau regroupant tous les acteurs
     // c'est un tableau de pointeurs sur structures t_acteurs
-    t_acteur * mesActeurs[NACTEUR];
+    t_acteur * mesActeurs[50];
     int compteur=0;
     int piece=200;
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
     BITMAP *img[NIMAGE];
+    BITMAP *img1[NIMAGE];
     BITMAP *decor;
     int i=0;
     char nomfichier[256];
@@ -318,7 +322,7 @@ void jouer2()
     }
 
     int imgcourante=0;
-    // on passe à l'image suivante une fois tous les tmpimg
+
     int cptimg=0, tmpimg=4;
     remplirTabActeurs(mesActeurs);
 
@@ -340,7 +344,7 @@ void jouer2()
         // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
        //dessinerTabActeurs(page,mesActeurs,img);
 
-           cptimg++;
+          /* cptimg++;
         if (cptimg>=tmpimg){
             cptimg=0;
 
@@ -351,12 +355,30 @@ void jouer2()
             if (imgcourante>=NIMAGE)
                 imgcourante=0;
         }
-
+*/
 
 
     for (i=0;i<NACTEUR;i++)
-    {if(mesActeurs[i]->etat==1)
-        draw_sprite(page,img[imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
+    {
+
+        mesActeurs[i]->cptimg++;
+        if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
+            mesActeurs[i]->cptimg=0;
+
+            mesActeurs[i]->imgcourante++;
+
+            // quand l'indice de l'image courante arrive à NIMAGE
+            // on recommence la séquence à partir de 0
+            if (mesActeurs[i]->imgcourante>=NIMAGE)
+                mesActeurs[i]->imgcourante=0;
+        }
+
+        if(mesActeurs[i]->etat==1)
+        {
+
+
+        draw_sprite(page,img[mesActeurs[i]->imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
+        }
     }
 
 
@@ -381,6 +403,9 @@ t_acteur * creerActeur()
 {
     // pointeur sur l'acteur qui sera créé (et retourné)
     t_acteur *acteur;
+    acteur->imgcourante=0;
+    acteur->cptimg=0;
+    acteur->tmpimg=4;
 
     acteur->etat=1;
 
