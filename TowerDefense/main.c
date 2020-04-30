@@ -12,6 +12,7 @@ void modedemploi();//affichage des r�gles
 void reglage();//affichage des reglages
 void jeux();//lancement du jeux
 void jouer2();
+void credit();
 
 typedef struct sequence
 {
@@ -38,7 +39,7 @@ typedef struct acteur
 
     // type :   0 rectangle   1 ellipse   2 triangle
     //          ( codes arbitraires : convention )
-    int type;
+
 
     // comportement :   0 inertie     1 inertie + changements aléatoires
     //                  ( codes arbitraires : convention )
@@ -47,6 +48,7 @@ typedef struct acteur
     int imgcourante; // indice de l'image courante
     int tmpimg;      // ralentir séquence (image suivante 1 fois sur tmpimg)
     int cptimg;
+    int etat;
 
 } t_acteur;
 
@@ -138,8 +140,9 @@ void menu()
 
     while ( !key[KEY_ESC] )
     {
-        textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+
         blit(decor,page,0,0,0,0, SCREEN_W, SCREEN_H);
+        textprintf_ex(page,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
 
     if(mouse_x<=850 && mouse_x>=600 && mouse_y<=420 && mouse_y>=350)
     {
@@ -168,9 +171,9 @@ void menu()
             modedemploi();
         }
 
-        if (mouse_b&1 && mouse_x>=(SCREEN_W-quitter->w) && mouse_x<=(SCREEN_W+quitter->w) && mouse_y>=(SCREEN_H-quitter->h) && mouse_y<=(SCREEN_H+quitter->h))
+        if (mouse_b&1 && mouse_x>=385 && mouse_x<=863 && mouse_y>=350 && mouse_y<=420)
         {
-            ;
+            credit();
         }
 
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
@@ -178,7 +181,33 @@ void menu()
         rest(20);
     }
 }
+void credit()
+{
+    BITMAP *mde;
+    BITMAP *retour;
+    BITMAP *decor;
 
+    clear(screen);
+
+
+    mde=load_bitmap("images/credits2.bmp",NULL);
+    if (!mde)
+    {
+        allegro_message("pas pu trouver mde.bmp");
+        exit(EXIT_FAILURE);
+    }
+    blit(mde,screen,0,0, (SCREEN_W-mde->w)/2,0, mde->w, mde->h);
+
+
+    while ( !key[KEY_ESC] )
+    {
+        textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+        if (mouse_b&1 && mouse_x>=822 && mouse_x<=973 && mouse_y>=651 && mouse_y<=757)
+        {
+            menu();
+        }
+    }
+}
 void modedemploi()
 {
     BITMAP *mde;
@@ -187,13 +216,6 @@ void modedemploi()
 
     clear(screen);
 
-    decor=load_bitmap("images/decor31.bmp",NULL);
-    if (!decor)
-    {
-        allegro_message("pas pu trouver decor.bmp");
-        exit(EXIT_FAILURE);
-    }
-    blit(decor,screen,0,0, (SCREEN_W-decor->w)/2, (SCREEN_H-decor->h)/2, decor->w, decor->h);
 
     mde=load_bitmap("images/mde.bmp",NULL);
     if (!mde)
@@ -203,17 +225,11 @@ void modedemploi()
     }
     blit(mde,screen,0,0, (SCREEN_W-mde->w)/2,0, mde->w, mde->h);
 
-    retour=load_bitmap("images/retour.bmp",NULL);
-    if (!mde)
-    {
-        allegro_message("pas pu trouver retour.bmp");
-        exit(EXIT_FAILURE);
-    }
-    blit(retour,screen,0,0, (SCREEN_W-retour->w),(SCREEN_H-retour->h), retour->w, retour->h);
 
     while ( !key[KEY_ESC] )
     {
-        if (mouse_b&1 && mouse_x>=(SCREEN_W-retour->w) && mouse_x<=(SCREEN_W+retour->w) && mouse_y>=(SCREEN_H-retour->h) && mouse_y<=(SCREEN_H+retour->h))
+        textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+        if (mouse_b&1 && mouse_x>=822 && mouse_x<=973 && mouse_y>=651 && mouse_y<=757)
         {
             menu();
         }
@@ -254,6 +270,7 @@ void reglage()
 
     while ( !key[KEY_ESC] )
     {
+        textprintf_ex(screen,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
         if (mouse_b&1 && mouse_x>=(SCREEN_W-retour->w) && mouse_x<=(SCREEN_W+retour->w) && mouse_y>=(SCREEN_H-retour->h) && mouse_y<=(SCREEN_H+retour->h))
         {
             menu();
@@ -261,143 +278,20 @@ void reglage()
     }
 }
 
-void jeux()
-{
 
-    // LES INFORMATIONS SUIVANTES VONT ALLER DANS UNE STRUCTURE ACTEUR
-    //   ( pour pouvoir gérer plusieurs sprites animés )
-
-    // Données géométriques de l'animation
-    int x,y;
-    int dx,dy;
-    int tx,ty;
-
-    // Pour pouvoir avancer très lentement on avance moins souvent
-    //  ( ajouter dx une fois tous les tmpdx, initialement à chaque fois )
-    int cptdx=0, tmpdx=1;
-
-    // Gestion de l'enchainement des images de la séquence
-    // indice de l'image courante
-    int imgcourante=0;
-    // on passe à l'image suivante une fois tous les tmpimg
-    int cptimg=0, tmpimg=4;
-
-    // Séquence d'animation
-    BITMAP *img[NIMAGE];
-
-
-
-    // AUTRES VARIABLES NE CONCERNANT PAS SPECIFIQUEMENT LE CHAT
-
-    // BITMAP servant de buffer d'affichage (double buffer)
-
-    // Image de fond
-    BITMAP *decor;
-
-    // La tempo générale (fonction rest) sera réglable
-    int tempoglobale=10;
-
-    // Pour charger la séquence
-    int i;
-    char nomfichier[256];
-
-
-    // Lancer allegro et le mode graphique
-
-
-    // charger image de fond
-    decor=load_bitmap("images/decor1.bmp",NULL);
-    if (!decor)
-    {
-        allegro_message("pas pu trouver images/decor1.bmp");
-        exit(EXIT_FAILURE);
-    }
-
-    // charger les images de la séquence d'animation
-    for (i=0;i<NIMAGE;i++)
-    {
-        // sprintf permet de faire un printf dans une chaine
-        sprintf(nomfichier,"zombiemarche/Walk (%d).bmp",i);
-
-        img[i] = load_bitmap(nomfichier,NULL);
-        if (!img[i]){
-            allegro_message("pas pu trouver %s",nomfichier);
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    // initialisation des données du chat
-
-    tx = img[0]->w; // pour la taille on se base sur la 1ère image de la séquence
-    ty = img[0]->h;
-    x = 0;
-    y = SCREEN_H-2*ty;
-    dx = 5;
-    dy = 0;
-
-    cptdx=0;
-    tmpdx=1;
-
-    imgcourante=0;
-    cptimg=0;
-    tmpimg=5;
-
-
-    // Boucle d'animation (pas d'interaction)
-    while (!key[KEY_ESC])
-    {
-        // effacer buffer en appliquant décor  (pas de clear_bitmap)
-        blit(decor,screen,0,0,0,0,SCREEN_W,SCREEN_H);
-
-        // appel d'un sous programme de réglage interactif des parametres
-        // ( seulement utile sur cet exemple ou pour du debug )
-
-
-        // gestion déplacement du chat
-        if ( (x<0 && dx<0) || (x+tx>SCREEN_W && dx>0) )
-            dx = -dx;
-
-        cptdx++;
-        if (cptdx>=tmpdx){
-            cptdx=0;
-            x+=dx;
-        }
-
-        y+=dy;
-
-        // gestion enchainement des images
-        // incrémenter imgcourante une fois sur tmpimg
-        cptimg++;
-        if (cptimg>=tmpimg){
-            cptimg=0;
-
-            imgcourante++;
-
-            // quand l'indice de l'image courante arrive à NIMAGE
-            // on recommence la séquence à partir de 0
-
-
-
-        // affichage du buffer à l'écrane
-
-
-        // la petite pause...
-        rest(tempoglobale);
-    }
-    }
-}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void jouer2()
 {
   // Le tableau regroupant tous les acteurs
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[NACTEUR];
-    int compteur;
-
+    int compteur=0;
+    int piece=200;
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
     BITMAP *img[NIMAGE];
- int i=0;
+    BITMAP *decor;
+    int i=0;
     char nomfichier[256];
 
     // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
@@ -416,6 +310,13 @@ void jouer2()
         }
     }
 
+    decor=load_bitmap("images/background.bmp",NULL);
+    if (!decor)
+    {
+        allegro_message("pas pu trouver decor.bmp");
+        exit(EXIT_FAILURE);
+    }
+
     int imgcourante=0;
     // on passe à l'image suivante une fois tous les tmpimg
     int cptimg=0, tmpimg=4;
@@ -425,19 +326,19 @@ void jouer2()
     // Boucle d'animation (pas d'interaction)
     while (!key[KEY_ESC])
     {
-
-
         // 1) EFFACER POSITIONs ACTUELLEs SUR LE BUFFER
         //    ON EFFACE TOUT LE BUFFER ! (c'est plus simple)
         clear_bitmap(page);
+        blit(decor,page,0,0,0,0, SCREEN_W, SCREEN_H);
+
+        textprintf_ex(page,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+        textprintf_ex(page,font,100,100,makecol(255,255,255),-1,"vos pieces : %d",piece);
 
          // 2) DETERMINER NOUVELLEs POSITIONs
         actualiserTabActeurs(mesActeurs);
 
         // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
        //dessinerTabActeurs(page,mesActeurs,img);
-
-        rectfill(page,mesActeurs[2]->posx,mesActeurs[2]->posy,mesActeurs[2]->posx+mesActeurs[2]->tx,mesActeurs[2]->posy+mesActeurs[2]->ty,mesActeurs[2]->couleur);
 
            cptimg++;
         if (cptimg>=tmpimg){
@@ -451,7 +352,19 @@ void jouer2()
                 imgcourante=0;
         }
 
-            draw_sprite(page,img[imgcourante], mesActeurs[2]->posx,mesActeurs[2]->posy);
+
+
+    for (i=0;i<NACTEUR;i++)
+    {if(mesActeurs[i]->etat==1)
+        draw_sprite(page,img[imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
+    }
+
+
+            /*draw_sprite(page,img[imgcourante], mesActeurs[2]->posx,mesActeurs[2]->posy);
+            draw_sprite(page,img[imgcourante], mesActeurs[1]->posx,mesActeurs[1]->posy);
+            draw_sprite(page,img[imgcourante], mesActeurs[3]->posx,mesActeurs[3]->posy);
+            draw_sprite(page,img[imgcourante], mesActeurs[4]->posx,mesActeurs[4]->posy);*/
+
 
         // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
@@ -469,6 +382,8 @@ t_acteur * creerActeur()
     // pointeur sur l'acteur qui sera créé (et retourné)
     t_acteur *acteur;
 
+    acteur->etat=1;
+
     // Création (allocation)
     acteur = (t_acteur *)malloc(1*sizeof(t_acteur));
 
@@ -479,18 +394,26 @@ t_acteur * creerActeur()
     acteur->ty = rand()%40+40;
 
     // Position aléatoire (on tient compte de la taille...)
-    acteur->posx = 1050;
-    acteur->posy = rand()%(SCREEN_H - acteur->ty);
+    acteur->posx = 1050+rand()%(2500-1050+1);
+    acteur->posy = 1+rand()%(3);
+    if(acteur->posy==1)
+    {
+        acteur->posy=190;
+    }
+    if(acteur->posy==2)
+    {
+        acteur->posy=310;
+    }
+    if(acteur->posy==3)
+    {
+        acteur->posy=440;
+    }
 
     // Vitesse aléatoire symétrique
     // avec composantes horizontales et verticales non nulles
 
         acteur->depx = -3;
         acteur->depy = 0;
-
-
-    // Type au hasard 0, 1, 2
-    acteur->type = 0;
 
     // Comportement au hasard (0 ou 1)
     acteur->comportement = 0;
@@ -537,7 +460,12 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
     for (i=0;i<NACTEUR;i++)
         actualiserActeur(tab[i]);
 
+
 }
+
+
+
+
 
 
 
