@@ -444,7 +444,7 @@ void chargerSequence(t_sequence * seq)
 
     for (i=0;i<(seq->nimg);i++)
     {
-        sprintf(nomfichier,seq->nomSource"%d",i);
+         sprintf(nomfichier,seq->nomSource"%d",i);
         img[i]= load_bitmap(nomfichier,NULL);
         if (!img[i]){
             allegro_message(pas pu trouver "%s",nomfichier);
