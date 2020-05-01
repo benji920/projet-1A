@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 #define NIMAGE 9
-#define NACTEUR 30
+#define NACTEUR 5
 #define NSEQUENCE 6
 
 
@@ -13,7 +13,6 @@ void reglage();//affichage des reglages
 void jeux();//lancement du jeux
 void jouer2();
 void credit();
-
 
 
 typedef struct sequence
@@ -78,7 +77,6 @@ int main()
     install_keyboard();
     install_mouse();
     BITMAP *page;
-    SAMPLE *sample;
 
     set_color_depth(desktop_color_depth());
     if (set_gfx_mode(GFX_AUTODETECT_WINDOWED,1024,768,0,0)!=0)
@@ -87,17 +85,11 @@ int main()
         allegro_exit();
         exit(EXIT_FAILURE);
     }
-
-
-sample=load_wav("son1.wav");
-install_sound(DIGI_AUTODETECT,MIDI_AUTODETECT,NULL);
     show_mouse(screen);
 
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear_bitmap(page);
 
-
-play_sample(sample,100,100,1000,0);
 
     while ( !key[KEY_ESC] )
     {
@@ -128,6 +120,9 @@ void menu()
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear(page);
 
+    SAMPLE *sample;
+sample=load_wav("son1.wav");
+install_sound(DIGI_AUTODETECT,MIDI_AUTODETECT,NULL);
 
     decor=load_bitmap("images/decor31.bmp",NULL);
     if (!decor)
@@ -146,7 +141,7 @@ void menu()
     //blit(towerdefense,screen,0,0, (SCREEN_W-towerdefense->w)/2, (SCREEN_H-towerdefense->h)/2-100, towerdefense->w, towerdefense->h);
     //draw_sprite(screen,hachette,100,200);
 
-
+play_sample(sample,100,100,1000,0);
 
 
     while ( !key[KEY_ESC] )
@@ -297,7 +292,7 @@ void jouer2()
   // Le tableau regroupant tous les acteurs
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[50];
-    int *compteur=20;
+    int compteur=0;
     int piece=200;
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
@@ -305,11 +300,7 @@ void jouer2()
     BITMAP *img1[NIMAGE];
     BITMAP *decor;
     int i=0;
-    int x;
-    int y;
     char nomfichier[256];
-    //for(i=0;i<50;i++)
-      //  mesActeurs[i]=NULL;
 
     // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
     page=create_bitmap(SCREEN_W,SCREEN_H);
@@ -321,16 +312,6 @@ void jouer2()
         sprintf(nomfichier,"zombiemarche/Walk (%d).bmp",i);
 
         img[i] = load_bitmap(nomfichier,NULL);
-        if (!img[i]){
-            allegro_message("pas pu trouver %s",nomfichier);
-            exit(EXIT_FAILURE);
-        }
-    }
-    for (i=0;i<3;i++)
-    {
-
-
-        img1[i] = load_bitmap("champignon%d.bmp",i);
         if (!img[i]){
             allegro_message("pas pu trouver %s",nomfichier);
             exit(EXIT_FAILURE);
@@ -348,7 +329,6 @@ void jouer2()
 
     int cptimg=0, tmpimg=4;
     remplirTabActeurs(mesActeurs);
-
 
 
     // Boucle d'animation (pas d'interaction)
@@ -382,10 +362,9 @@ void jouer2()
 */
 
 
-    for (i=0;i<10;i++)
+    for (i=0;i<NACTEUR;i++)
     {
-if(mesActeurs[i]!=NULL)
-        {
+
         mesActeurs[i]->cptimg++;
         if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
             mesActeurs[i]->cptimg=0;
@@ -398,21 +377,21 @@ if(mesActeurs[i]!=NULL)
                 mesActeurs[i]->imgcourante=0;
         }
 
-        draw_sprite(page,img[mesActeurs[i]->imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
+        if(mesActeurs[i]->etat==1)
+        {
 
+
+        draw_sprite(page,img[mesActeurs[i]->imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
         }
     }
 
-    if(mouse_b&1)
-     {
 
-     }
+            /*draw_sprite(page,img[imgcourante], mesActeurs[2]->posx,mesActeurs[2]->posy);
+            draw_sprite(page,img[imgcourante], mesActeurs[1]->posx,mesActeurs[1]->posy);
+            draw_sprite(page,img[imgcourante], mesActeurs[3]->posx,mesActeurs[3]->posy);
+            draw_sprite(page,img[imgcourante], mesActeurs[4]->posx,mesActeurs[4]->posy);*/
 
 
-    /*    mesActeurs[20]=creerActeur();
-            mesActeurs[20]->posx=x;
-            mesActeurs[20]->posy=y;
-            compteur++;*/
         // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
@@ -490,7 +469,6 @@ void remplirTabActeurs(t_acteur * tab[NACTEUR])
     for (i=0;i<NACTEUR;i++)
         tab[i]=creerActeur();
 }
-
 
 
 // Actualiser un acteur (bouger ...)
