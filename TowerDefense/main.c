@@ -1,3 +1,4 @@
+
 #include <allegro.h>
 #include <stdio.h>
 #include <time.h>
@@ -603,6 +604,7 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
 
 }
+
 
 
 
