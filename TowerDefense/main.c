@@ -3,7 +3,6 @@
 #include <time.h>
 #include <math.h>
 #define NIMAGE 9
-
 #define NACTEUR 30
 #define NSEQUENCE 6
 
@@ -17,7 +16,6 @@ void credit();
 
 
 
-
 typedef struct sequence
 {
     char *nomSource; // nom du fichier image contenant la séquence
@@ -27,31 +25,27 @@ typedef struct sequence
     BITMAP **img;    // tableau de pointeurs pour indiquer les images
 } t_sequence;
 
-// données personnelles de chaque acteur qui se déplace
-// sur cet exemple on ne gère que des déplacements horizontaux (pas de dy...)
 typedef struct acteur
 {
-    // géométrie et déplacements
+    // coordonnée (du coin sup. gauche)
+    int posx, posy;
 
-    int x,y;         // position du coin sup. gauche
-    int dx;          // deplacement
-    int tmpdx;       // ralentir déplacements en x (1 pour ne pas ralentir)
-    int cptdx;       // compteur pour ralentir déplacement
-    int tx,ty;       // largeur hauteur
+    // vecteur deplacement
+    int depx, depy;
 
-    // séquence d'images de l'animation
+    // tailles : horizontal/vertical
+    int tx,ty;
 
-    int imgcourante; // indice de l'image courante
-    int tmpimg;      // ralentir séquence (image suivante 1 fois sur tmpimg)
-    int cptimg;      // compteur pour ralentir séquence
+    // couleur de l'élément graphique
+    int couleur;
 
-    // type = numéro de la sequence à utiliser dans tabSequences
-    // ( ici : 0 Dragon  1 Poisson  2 Crabe  3 Abeille  4 Moustique  5 Serpent )
+    // type :   0 rectangle   1 ellipse   2 triangle
+    //          ( codes arbitraires : convention )
 
-    int type;
 
-} t_acteur;
-
+    // comportement :   0 inertie     1 inertie + changements aléatoires
+    //                  ( codes arbitraires : convention )
+    int comportement;
 
     int imgcourante; // indice de l'image courante
     int tmpimg;      // ralentir séquence (image suivante 1 fois sur tmpimg)
@@ -63,12 +57,15 @@ typedef struct acteur
 
 } t_acteur;
 
-
 t_sequence tabSequences[NSEQUENCE] =
 {
         //          nomSource           , nimg,  tx,  ty, ncol
-        { "images/champignon/champignon.bmp" ,    9, 181,  150,    3 },
-        { "zombiemarche/Walk .bmp"   ,    3,  101,  70,    3 }
+        { "images/dragon/dragon.bmp"    ,    6, 128,  64,    3 },
+        { "images/dragon/poisson.bmp"   ,    3,  64,  32,    3 },
+        { "images/dragon/crabe.bmp"     ,    4,  64,  32,    4 },
+        { "images/dragon/abeille.bmp"   ,    6,  50,  40,    6 },
+        { "images/dragon/moustique.bmp" ,    6,  50,  40,    6 },
+        { "images/dragon/serpent.bmp"   ,    7, 100,  50,    4 }
 };
 
 
@@ -293,10 +290,10 @@ void reglage()
     }
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void jouer2()
 {
-
   // Le tableau regroupant tous les acteurs
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[50];
@@ -314,10 +311,9 @@ void jouer2()
     //for(i=0;i<50;i++)
       //  mesActeurs[i]=NULL;
 
-
+    // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear_bitmap(page);
-
 
     for (i=0;i<NIMAGE;i++)
     {
@@ -341,7 +337,6 @@ void jouer2()
         }
     }
 
-
     decor=load_bitmap("images/background.bmp",NULL);
     if (!decor)
     {
@@ -349,30 +344,28 @@ void jouer2()
         exit(EXIT_FAILURE);
     }
 
-
     int imgcourante=0;
 
     int cptimg=0, tmpimg=4;
     remplirTabActeurs(mesActeurs);
 
 
-    remplirTabActeurs(mesActeurs);
-
-
 
     // Boucle d'animation (pas d'interaction)
-
     while (!key[KEY_ESC])
     {
+        // 1) EFFACER POSITIONs ACTUELLEs SUR LE BUFFER
+        //    ON EFFACE TOUT LE BUFFER ! (c'est plus simple)
+        clear_bitmap(page);
+        blit(decor,page,0,0,0,0, SCREEN_W, SCREEN_H);
 
-        // 1)  EFFACER BUFFER, en appliquant décor  (pas de clear_bitmap)
-        blit(decor,page,0,0,0,0,SCREEN_W,SCREEN_H);
+        textprintf_ex(page,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
+        textprintf_ex(page,font,100,100,makecol(255,255,255),-1,"vos pieces : %d",piece);
 
-        // 2) DETERMINER NOUVELLEs POSITIONs
+         // 2) DETERMINER NOUVELLEs POSITIONs
         actualiserTabActeurs(mesActeurs);
 
         // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
-
        //dessinerTabActeurs(page,mesActeurs,img);
 
           /* cptimg++;
@@ -416,7 +409,6 @@ if(mesActeurs[i]!=NULL)
      }
 
 
-
     /*    mesActeurs[20]=creerActeur();
             mesActeurs[20]->posx=x;
             mesActeurs[20]->posy=y;
@@ -427,10 +419,12 @@ if(mesActeurs[i]!=NULL)
         // 5) ON FAIT UNE PETITE PAUSE à chaque fois sinon ça va trop vite...
         rest(20);
     }
+
+    return 0;
 }
 
-
-t_acteur * creerActeur(int type, int x, int y, int dx, int tmpdx, int tmpimg)
+// Allouer et initialiser (aléatoirement) un acteur
+t_acteur * creerActeur()
 {
     // pointeur sur l'acteur qui sera créé (et retourné)
     t_acteur *acteur;
@@ -438,28 +432,54 @@ t_acteur * creerActeur(int type, int x, int y, int dx, int tmpdx, int tmpimg)
     acteur->cptimg=0;
     acteur->tmpimg=4;
 
+    acteur->etat=1;
+
     // Création (allocation)
     acteur = (t_acteur *)malloc(1*sizeof(t_acteur));
 
-    // Initialisation géométrie et déplacement
-    acteur->x=x;           acteur->y=y;
-    acteur->dx=dx;
-    acteur->tmpdx=tmpdx;
-    acteur->cptdx=0;
-    acteur->tx=tabSequences[type].tx;
-    acteur->ty=tabSequences[type].ty;
-
-    // Initialisation séquence d'images de l'animation
+    // Initialisation
     acteur->imgcourante=0;
-    acteur->tmpimg=tmpimg;
-    acteur->cptimg=0;
 
-    // numéro de séquence
-    acteur->type=type;
+    acteur->tx = rand()%40+40;
+    acteur->ty = rand()%40+40;
+
+    // Position aléatoire (on tient compte de la taille...)
+    acteur->posx = 1050+rand()%(2500-1050+1);
+    acteur->posy = 1+rand()%(3);
+    if(acteur->posy==1)
+    {
+        acteur->posy=190;
+    }
+    if(acteur->posy==2)
+    {
+        acteur->posy=310;
+    }
+    if(acteur->posy==3)
+    {
+        acteur->posy=440;
+    }
+
+    // Vitesse aléatoire symétrique
+    // avec composantes horizontales et verticales non nulles
+
+        acteur->depx = -3;
+        acteur->depy = 0;
+
+    // Comportement au hasard (0 ou 1)
+    acteur->comportement = 0;
+
+    // Pour mieux visualiser on associe 2 domiantes couleurs distinctes
+    // aux 2 comportement (mais ce n'est pas obligé)
+    if ( acteur->comportement == 0 )
+        acteur->couleur = makecol(rand()%64+196,rand()%40+40,rand()%40+40);
+    else
+        acteur->couleur = makecol(rand()%40+40,rand()%64+196,rand()%40+40);
 
     // on retourne cet acteur fraichement créé
+    // ( en fait on retourne le POINTEUR sur lui )
     return acteur;
 }
+
 // Remplir un tableau avec des (pointeurs sur) acteurs créés
 void remplirTabActeurs(t_acteur * tab[NACTEUR])
 {
@@ -468,11 +488,7 @@ void remplirTabActeurs(t_acteur * tab[NACTEUR])
     // On "accroche" NACTEUR nouveaux acteurs
     // à chaque case du tableau
     for (i=0;i<NACTEUR;i++)
-    {
-                  //      (type,   x,   y,  dx, tmpdx, tmpimg )
-        tab[0]=creerActeur(   0, 500,   0,  -5,     1,      5 );
-        tab[1]=creerActeur(   1, 300, 400,   0,     1,      8 );
-    }
+        tab[i]=creerActeur();
 }
 
 
@@ -481,31 +497,10 @@ void remplirTabActeurs(t_acteur * tab[NACTEUR])
 void actualiserActeur(t_acteur *acteur)
 {
 
-    // gestion des bords "à la pac man"
-    // sur cet exemple seulement sur l'axe x (car pas de dy)
-    if (acteur->x+acteur->tx < 0) acteur->x=SCREEN_W;
-    if (acteur->x > SCREEN_W) acteur->x=-acteur->tx;
-
     // calculer nouvelle position
-    // nouvelle position = position actuelle + deplacement seulement une fois sur tmpdx
-    // sur cet exemple seulement sur l'axe x (car pas de dy)
-    acteur->cptdx++;
-    if (acteur->cptdx >= acteur->tmpdx){
-        acteur->cptdx=0;
-        acteur->x = acteur->x + acteur->dx;
-    }
-
-    // gestion enchainement des images
-    // incrémenter imgcourante une fois sur tmpimg
-    acteur->cptimg++;
-    if (acteur->cptimg >= acteur->tmpimg){
-        acteur->cptimg=0;
-        acteur->imgcourante++;
-        // quand l'indice de l'image courante arrive à nimg de la séquence
-        // on recommence la séquence à partir de 0
-        if ( acteur->imgcourante >= tabSequences[ acteur->type ].nimg )
-            acteur->imgcourante=0;
-    }
+    // nouvelle position = position actuelle + deplacement
+    acteur->posx = acteur->posx + acteur->depx;
+    acteur->posy = acteur->posy + acteur->depy;
 }
 
 // Gérer l'évolution de l'ensemble des acteurs
@@ -515,55 +510,15 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
     for (i=0;i<NACTEUR;i++)
         actualiserActeur(tab[i]);
+
+
 }
 
 
-// Dessiner un acteur sur une bitmap bmp
-void dessinerActeur(BITMAP *bmp, t_acteur *acteur)
-{
-    // Pointeur sur la séquence concernée (prise en compte du type de l'acteur)
-    t_sequence *seq;
-    seq=&tabSequences[ acteur->type ];
-
-    //  Prise en compte du numéro d'image courante de l'acteur dans cette séquence
-    draw_sprite(bmp, seq->img[ acteur->imgcourante ], acteur->x, acteur->y);
-}
-
-// Dessiner l'ensemble des acteurs sur une bitmap bmp
-void dessinerTabActeurs(BITMAP *bmp,t_acteur * tab[NACTEUR])
-{
-    int i;
-
-    for (i=0;i<NACTEUR;i++)
-        dessinerActeur(bmp,tab[i]);
-}
 
 
-// Charger les images d'une séquence d'animation
-// Découpe une image source en plusieurs vignettes
-// (doivent être rangées de gauche à droite et de haut en bas)
-void chargerSequence(t_sequence * seq)
-{
-    BITMAP *img[seq->nimg];// la bitmap qui charge l'image de séquence (temporairement)
-    int i;           // indice de l'image dans la séquence
-    int ix,iy;       // indices (horizontal et vertical) dans le "tableau" des images
-    int sx,sy;         // coordonnées correspondantes (en pixels)
-    char nomfichier[256];
 
 
-    for (i=0;i<(seq->nimg);i++)
-    {
-         sprintf(nomfichier,seq->nomSource"%d",i);
-        img[i]= load_bitmap(nomfichier,NULL);
-        if (!img[i]){
-            allegro_message(pas pu trouver "%s",nomfichier);
-            exit(EXIT_FAILURE);
-        }
-        seq->img[i]=create_bitmap(seq->tx,seq->ty);
-        sx=ix*seq->tx;
-        sy=iy*seq->ty;
 
-        }
-}
 
 
