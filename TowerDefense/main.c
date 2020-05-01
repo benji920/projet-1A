@@ -362,13 +362,17 @@ void jouer2()
         }
 */
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of de2c2bb... 0.589
 =======
 >>>>>>> parent of de2c2bb... 0.589
 
     for (i=0;i<NACTEUR;i++)
     {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         mesActeurs[i]->cptimg++;
         if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
@@ -378,10 +382,18 @@ void jouer2()
     for (i=0;i<NACTEUR;i++)
     {
 
+=======
+    for (i=0;i<NACTEUR;i++)
+    {
+
+>>>>>>> parent of de2c2bb... 0.589
         mesActeurs[i]->cptimg++;
         if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
             mesActeurs[i]->cptimg=0;
 
+<<<<<<< HEAD
+>>>>>>> parent of de2c2bb... 0.589
+=======
 >>>>>>> parent of de2c2bb... 0.589
             mesActeurs[i]->imgcourante++;
 
@@ -516,8 +528,11 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> parent of de2c2bb... 0.589
 =======
 >>>>>>> parent of de2c2bb... 0.589
 =======
