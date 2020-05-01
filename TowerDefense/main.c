@@ -292,6 +292,7 @@ void jouer2()
   // Le tableau regroupant tous les acteurs
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[50];
+    t_acteur * mesActeurs1[50];
     int compteur=0;
     int piece=200;
     // BITMAP servant de buffer d'affichage (double buffer)
@@ -301,6 +302,8 @@ void jouer2()
     BITMAP *decor;
     int i=0;
     char nomfichier[256];
+    int x=30;
+    int y=30;
 
     // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
     page=create_bitmap(SCREEN_W,SCREEN_H);
@@ -318,6 +321,19 @@ void jouer2()
         }
     }
 
+    for (i=0;i<3;i++)
+    {
+        // sprintf permet de faire un printf dans une chaine
+        sprintf(nomfichier,"champignon%d.bmp",i);
+
+        img1[i] = load_bitmap(nomfichier,NULL);
+        if (!img1[i]){
+            allegro_message("pas pu trouver %s",nomfichier);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+
     decor=load_bitmap("images/background.bmp",NULL);
     if (!decor)
     {
@@ -326,9 +342,13 @@ void jouer2()
     }
 
     int imgcourante=0;
-
     int cptimg=0, tmpimg=4;
+
+    int imgcourante1=0;
+    int cptimg1=0, tmpimg1=150;
     remplirTabActeurs(mesActeurs);
+    remplirTabActeurs1(mesActeurs1);
+
 
 
     // Boucle d'animation (pas d'interaction)
@@ -344,53 +364,81 @@ void jouer2()
 
          // 2) DETERMINER NOUVELLEs POSITIONs
         actualiserTabActeurs(mesActeurs);
+       // actualiserTabActeurs(mesActeurs1);
 
-        // 3) AFFICHAGE NOUVELLEs POSITIONs SUR LE BUFFER
-       //dessinerTabActeurs(page,mesActeurs,img);
 
-          /* cptimg++;
+
+cptimg++;
         if (cptimg>=tmpimg){
             cptimg=0;
-
             imgcourante++;
-
-            // quand l'indice de l'image courante arrive à NIMAGE
-            // on recommence la séquence à partir de 0
             if (imgcourante>=NIMAGE)
                 imgcourante=0;
         }
-*/
-
-
-    for (i=0;i<NACTEUR;i++)
+    for (i=0;i<10;i++)
     {
-
-        mesActeurs[i]->cptimg++;
-        if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
-            mesActeurs[i]->cptimg=0;
-
-            mesActeurs[i]->imgcourante++;
-
-            // quand l'indice de l'image courante arrive à NIMAGE
-            // on recommence la séquence à partir de 0
-            if (mesActeurs[i]->imgcourante>=NIMAGE)
-                mesActeurs[i]->imgcourante=0;
-        }
-
         if(mesActeurs[i]->etat==1)
         {
-
-
-        draw_sprite(page,img[mesActeurs[i]->imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
+        draw_sprite(page,img[imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
         }
     }
 
 
-            /*draw_sprite(page,img[imgcourante], mesActeurs[2]->posx,mesActeurs[2]->posy);
-            draw_sprite(page,img[imgcourante], mesActeurs[1]->posx,mesActeurs[1]->posy);
-            draw_sprite(page,img[imgcourante], mesActeurs[3]->posx,mesActeurs[3]->posy);
-            draw_sprite(page,img[imgcourante], mesActeurs[4]->posx,mesActeurs[4]->posy);*/
 
+
+
+
+
+  masked_blit(img1[2],page,0,0,x,y, img1[2]->w, img1[2]->h);
+
+
+
+  if(mesActeurs1[compteur]->etat==1 )
+        {
+            if(mouse_b&1 && mouse_x<=200)
+            {
+                mesActeurs1[compteur]->posx = mouse_x;
+                mesActeurs1[compteur]->posy = mouse_y;
+
+            }
+            draw_sprite(page,img1[imgcourante1], mesActeurs1[compteur]->posx,mesActeurs1[compteur]->posy);
+
+
+        }
+        if((mouse_b&1) && mouse_x>=0 && mouse_x<=100 && mouse_y>=0 && mouse_y<=100 && piece>150)
+
+        {
+
+            mesActeurs1[compteur]->etat=1;
+            piece=piece-150;
+
+
+        }
+
+
+
+
+
+  ////////////////////////////////////////////////////////
+    cptimg1++;
+        if (cptimg1>=tmpimg1){
+            cptimg1=0;
+            imgcourante1++;
+            if (imgcourante1>=2)
+                imgcourante1=0;
+        }
+
+/*for (i=0;i<10;i++)
+    {
+
+
+        if(mesActeurs1[i]->etat==1)
+        {
+
+
+        draw_sprite(page,img1[imgcourante1], mesActeurs1[i]->posx,mesActeurs1[i]->posy);
+        }
+    }*/
 
         // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
@@ -460,16 +508,80 @@ t_acteur * creerActeur()
 }
 
 // Remplir un tableau avec des (pointeurs sur) acteurs créés
-void remplirTabActeurs(t_acteur * tab[NACTEUR])
+void remplirTabActeurs(t_acteur * tab[50])
 {
     int i;
 
     // On "accroche" NACTEUR nouveaux acteurs
     // à chaque case du tableau
-    for (i=0;i<NACTEUR;i++)
+    for (i=0;i<50;i++)
         tab[i]=creerActeur();
 }
 
+t_acteur * creerActeur1()
+{
+    // pointeur sur l'acteur qui sera créé (et retourné)
+    t_acteur *acteur;
+    acteur->imgcourante=0;
+    acteur->cptimg=0;
+    acteur->tmpimg=4;
+
+    acteur->etat=0;
+
+    // Création (allocation)
+    acteur = (t_acteur *)malloc(1*sizeof(t_acteur));
+
+    // Initialisation
+    acteur->imgcourante=0;
+
+    acteur->tx = rand()%40+40;
+    acteur->ty = rand()%40+40;
+
+    // Position aléatoire (on tient compte de la taille...)
+    acteur->posx = 100;
+    acteur->posy = 1+rand()%(3);
+    if(acteur->posy==1)
+    {
+        acteur->posy=190;
+    }
+    if(acteur->posy==2)
+    {
+        acteur->posy=310;
+    }
+    if(acteur->posy==3)
+    {
+        acteur->posy=440;
+    }
+
+    // Vitesse aléatoire symétrique
+    // avec composantes horizontales et verticales non nulles
+
+        acteur->depx = -3;
+        acteur->depy = 0;
+
+    // Comportement au hasard (0 ou 1)
+    acteur->comportement = 0;
+
+    // Pour mieux visualiser on associe 2 domiantes couleurs distinctes
+    // aux 2 comportement (mais ce n'est pas obligé)
+    if ( acteur->comportement == 0 )
+        acteur->couleur = makecol(rand()%64+196,rand()%40+40,rand()%40+40);
+    else
+        acteur->couleur = makecol(rand()%40+40,rand()%64+196,rand()%40+40);
+
+    // on retourne cet acteur fraichement créé
+    // ( en fait on retourne le POINTEUR sur lui )
+    return acteur;
+}
+void remplirTabActeurs1(t_acteur * tab[50])
+{
+    int i;
+
+    // On "accroche" NACTEUR nouveaux acteurs
+    // à chaque case du tableau
+    for (i=0;i<50;i++)
+        tab[i]=creerActeur1();
+}
 
 // Actualiser un acteur (bouger ...)
 void actualiserActeur(t_acteur *acteur)
@@ -491,6 +603,7 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
 
 }
+
 
 
 
