@@ -361,8 +361,20 @@ void jouer2()
                 imgcourante=0;
         }
 */
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of de2c2bb... 0.589
 
+    for (i=0;i<NACTEUR;i++)
+    {
+
+<<<<<<< HEAD
+        mesActeurs[i]->cptimg++;
+        if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
+            mesActeurs[i]->cptimg=0;
+
+=======
     for (i=0;i<NACTEUR;i++)
     {
 
@@ -370,6 +382,7 @@ void jouer2()
         if (mesActeurs[i]->cptimg>=mesActeurs[i]->tmpimg){
             mesActeurs[i]->cptimg=0;
 
+>>>>>>> parent of de2c2bb... 0.589
             mesActeurs[i]->imgcourante++;
 
             // quand l'indice de l'image courante arrive à NIMAGE
@@ -502,7 +515,10 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> parent of de2c2bb... 0.589
 =======
 >>>>>>> parent of de2c2bb... 0.589
