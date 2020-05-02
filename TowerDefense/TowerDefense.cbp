@@ -34,7 +34,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="fichier.h" />
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="structures;c.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
