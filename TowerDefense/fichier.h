@@ -7,7 +7,7 @@
 #include <time.h>
 #include <math.h>
 #define NIMAGE 9
-#define NACTEUR 5
+#define NACTEUR 20
 #define NSEQUENCE 6
 void menu();//affichage du menu et s�lection
 void modedemploi();//affichage des r�gles

@@ -28,29 +28,12 @@ typedef struct acteur
 
     int etat;
 
-    int type;
 
 } t_acteur;
 
-typedef struct sequence
-{
-    char *nomSource; // nom du fichier image contenant la séquence
-    int nimg;        // nombre d'images dans la séquence
-    int tx,ty;       // largeur et hauteur des images de la séquence
-    int ncol;        // nbr images cotes à cotes horizontalement dans le fichier image
-    BITMAP **img;    // tableau de pointeurs pour indiquer les images
-} t_sequence;
 
-t_sequence tabSequences[NSEQUENCE] =
-{
-        //          nomSource           , nimg,  tx,  ty, ncol
-        { "images/dragon/dragon.bmp"    ,    6, 128,  64,    3 },
-        { "images/dragon/poisson.bmp"   ,    3,  64,  32,    3 },
-        { "images/dragon/crabe.bmp"     ,    4,  64,  32,    4 },
-        { "images/dragon/abeille.bmp"   ,    6,  50,  40,    6 },
-        { "images/dragon/moustique.bmp" ,    6,  50,  40,    6 },
-        { "images/dragon/serpent.bmp"   ,    7, 100,  50,    4 }
-};
+
+
 
 
 
@@ -187,13 +170,11 @@ void reglage()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void jouer2()
 {
-  // Le tableau regroupant tous les acteurs
-    // c'est un tableau de pointeurs sur structures t_acteurs
+
     t_acteur * mesActeurs[50];
     t_acteur * mesActeurs1[50];
     int compteur=0;
-    int *piece=500;
-    // BITMAP servant de buffer d'affichage (double buffer)
+    int piece=500;
     BITMAP *page;
     BITMAP *img[NIMAGE];
     BITMAP *img1[NIMAGE];
@@ -203,8 +184,6 @@ void jouer2()
     int x=30;
     int y=30;
     int u;
-
-    // CREATION DU BUFFER D'AFFICHAGE à la taille de l'écran
     page=create_bitmap(SCREEN_W,SCREEN_H);
     clear_bitmap(page);
 
@@ -246,15 +225,15 @@ void jouer2()
     int imgcourante1=0;
     int cptimg1=0, tmpimg1=150;
 
-    int *imgcourante2=0;
-    int *cptimg2=0, *tmpimg2=150;
+
+    int cptargent=0;
 
     remplirTabActeurs(mesActeurs);
     remplirTabActeurs1(mesActeurs1);
 
 
 
-    // Boucle d'animation (pas d'interaction)
+    ////////////////////////////////////////////////////////////////////////////////////////
     while (!key[KEY_ESC])
     {
         // 1) EFFACER POSITIONs ACTUELLEs SUR LE BUFFER
@@ -269,8 +248,10 @@ void jouer2()
          // 2) DETERMINER NOUVELLEs POSITIONs
         actualiserTabActeurs(mesActeurs);
        // actualiserTabActeurs(mesActeurs1);
+       collision(mesActeurs1,mesActeurs);
 
-
+argent(mesActeurs1, &piece, &cptargent);
+textprintf_ex(page,font,100,150,makecol(255,255,255),-1,"temps %d",cptargent);
 
 cptimg++;
         if (cptimg>=tmpimg){
@@ -294,11 +275,11 @@ if(!(mouse_b&1))
 u=0;
 
 
-  if(mouse_b&1 && u==0)
+  if(mouse_b&1 && u==0 && mouse_x>=0 && mouse_x<=104 && mouse_y>=0 && mouse_y<=131 && piece>=150)
 
         {
             mesActeurs1[compteur]->etat=1;
-
+            piece=piece-150;
             draw_sprite(page,img1[imgcourante1], mouse_x,mouse_y);
             compteur++;
             u=1;
@@ -346,9 +327,37 @@ textprintf_ex(page,font,100,300,makecol(0,255,0),makecol(0,0,0),"%d",compteur);
     return 0;
 }
 
-void argent(int *piece)
+void collision(t_acteur *champi[20], t_acteur *zombi[20])
 {
-    *piece=*piece+50;
+int i,j;
+for(j=0;j<20;j++)
+{
+    for(i=0;i<20;i++)
+    {
+        if(zombi[i]->posx+30<=champi[j]->posx)
+        {
+            if(champi[j]->posy<=zombi[i]->posy+140 && champi[j]->posy>=zombi[i]->posy-20)
+                champi[j]->etat=0;
+        }
+
+    }
+}
+}
+
+
+void argent(t_acteur *tab[50], int *piece, int *p1)
+{
+        int i;
+        for(i=0;i<10;i++)
+        {
+            if(tab[i]->etat==1)
+{
+
+        *p1=*p1+1;
+        if (*p1>=150){
+            *p1=0;
+            *piece=*piece+25;}}}
+
 }
 
 
@@ -368,7 +377,6 @@ t_acteur * creerActeur()
 
     // Initialisation
     acteur->imgcourante=0;
-
     acteur->tx = rand()%40+40;
     acteur->ty = rand()%40+40;
 

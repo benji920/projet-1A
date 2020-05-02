@@ -53,21 +53,21 @@ play_sample(sample,100,100,1000,0);
 
     if(mouse_x<=850 && mouse_x>=600 && mouse_y<=420 && mouse_y>=350)
     {
-        draw_sprite(page,hachette,530,360);
+        draw_sprite(page,hachette,530-30,360-10);
     }
 
     if(mouse_x<=456 && mouse_x>=200 && mouse_y<=420 && mouse_y>=350)
     {
-        draw_sprite(page,hachette,110,360);
+        draw_sprite(page,hachette,110-30,360-10);
 
     }
     if(mouse_x<=456 && mouse_x>=200 && mouse_y<=570 && mouse_y>=500)
     {
-        draw_sprite(page,hachette,110,510);
+        draw_sprite(page,hachette,110-30,510-10);
     }
     if(mouse_x<=880 && mouse_x>=600 && mouse_y<=570 && mouse_y>=500)
     {
-        draw_sprite(page,hachette,530,510);
+        draw_sprite(page,hachette,530-30,510-10);
     }
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=350 && mouse_y<=420)
         {
