@@ -1,7 +1,6 @@
 # depslib dependency file v1.0
-1588375015 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
+1588420671 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
 	"fichier.h"
-	<allegro.h>
 
 1587725296 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
 	<allegro.h>

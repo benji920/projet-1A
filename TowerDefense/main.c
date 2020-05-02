@@ -192,7 +192,7 @@ void jouer2()
     t_acteur * mesActeurs[50];
     t_acteur * mesActeurs1[50];
     int compteur=0;
-    int piece=200;
+    int *piece=500;
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
     BITMAP *img[NIMAGE];
@@ -245,6 +245,10 @@ void jouer2()
 
     int imgcourante1=0;
     int cptimg1=0, tmpimg1=150;
+
+    int *imgcourante2=0;
+    int *cptimg2=0, *tmpimg2=150;
+
     remplirTabActeurs(mesActeurs);
     remplirTabActeurs1(mesActeurs1);
 
@@ -341,6 +345,12 @@ textprintf_ex(page,font,100,300,makecol(0,255,0),makecol(0,0,0),"%d",compteur);
 
     return 0;
 }
+
+void argent(int *piece)
+{
+    *piece=*piece+50;
+}
+
 
 // Allouer et initialiser (aléatoirement) un acteur
 t_acteur * creerActeur()
