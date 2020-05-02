@@ -1,5 +1,14 @@
 #include "fichier.h"
 
+typedef struct tour
+{
+    int postx, posty;
+    int posfx, posfy;
+    int tx,ty;
+    int depfx;
+    int etat;
+}t_tour;
+
 typedef struct acteur
 {
     // coordonnée (du coin sup. gauche)
@@ -52,8 +61,6 @@ t_sequence tabSequences[NSEQUENCE] =
         { "images/dragon/serpent.bmp"   ,    7, 100,  50,    4 }
 };
 
-
-
 int main()
 {
 
@@ -85,7 +92,6 @@ int main()
 }
 END_OF_MAIN();
 
-
 void credit()
 {
     BITMAP *mde;
@@ -113,6 +119,7 @@ void credit()
         }
     }
 }
+
 void modedemploi()
 {
     BITMAP *mde;
@@ -182,8 +189,6 @@ void reglage()
         }
     }
 }
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void jouer2()
 {
@@ -191,13 +196,18 @@ void jouer2()
     // c'est un tableau de pointeurs sur structures t_acteurs
     t_acteur * mesActeurs[50];
     t_acteur * mesActeurs1[50];
+    t_tour * mesTours[50];
     int compteur=0;
-    int *piece=500;
+    int compteurTour=0;
+    int piece=500;
+    int *pointeurpiece=&piece;
     // BITMAP servant de buffer d'affichage (double buffer)
     BITMAP *page;
     BITMAP *img[NIMAGE];
     BITMAP *img1[NIMAGE];
     BITMAP *decor;
+    BITMAP *tour;
+    BITMAP *fleche;
     int i=0;
     char nomfichier[256];
     int x=30;
@@ -233,10 +243,25 @@ void jouer2()
     }
 
 
+
     decor=load_bitmap("images/background.bmp",NULL);
     if (!decor)
     {
         allegro_message("pas pu trouver decor.bmp");
+        exit(EXIT_FAILURE);
+    }
+
+    fleche=load_bitmap("images/fleche.bmp",NULL);
+    if (!fleche)
+    {
+        allegro_message("pas pu trouver fleche.bmp");
+        exit(EXIT_FAILURE);
+    }
+
+    tour=load_bitmap("images/tour.bmp",NULL);
+    if (!tour)
+    {
+        allegro_message("pas pu trouver tour.bmp");
         exit(EXIT_FAILURE);
     }
 
@@ -251,8 +276,7 @@ void jouer2()
 
     remplirTabActeurs(mesActeurs);
     remplirTabActeurs1(mesActeurs1);
-
-
+    remplirTabTour(mesTours);
 
     // Boucle d'animation (pas d'interaction)
     while (!key[KEY_ESC])
@@ -264,78 +288,98 @@ void jouer2()
         blit(decor,page,0,0,0,0, SCREEN_W, SCREEN_H);
 
         textprintf_ex(page,font,0,SCREEN_H-10,makecol(0,255,0),makecol(0,0,0),"%4d %4d",mouse_x,mouse_y);
-        textprintf_ex(page,font,100,100,makecol(255,255,255),-1,"vos pieces : %d",piece);
+        textprintf_ex(page,font,850,20,makecol(255,255,255),-1,"vos pieces : %d",piece);
 
          // 2) DETERMINER NOUVELLEs POSITIONs
         actualiserTabActeurs(mesActeurs);
        // actualiserTabActeurs(mesActeurs1);
 
+        cptimg++;
 
-
-cptimg++;
         if (cptimg>=tmpimg){
             cptimg=0;
             imgcourante++;
             if (imgcourante>=NIMAGE)
                 imgcourante=0;
         }
-    for (i=0;i<10;i++)
-    {
-        if(mesActeurs[i]->etat==1)
+        for (i=0;i<10;i++)
         {
-        draw_sprite(page,img[imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
-
+            if(mesActeurs[i]->etat==1)
+            {
+            draw_sprite(page,img[imgcourante], mesActeurs[i]->posx,mesActeurs[i]->posy);
+            }
         }
-    }
 
-  masked_blit(img1[2],page,0,0,x,y, img1[2]->w, img1[2]->h);
+        masked_blit(img1[2],page,0,0,x,y, img1[2]->w, img1[2]->h);
+        masked_blit(tour,page,0,0,150,0, tour->w, tour->h);
 
-if(!(mouse_b&1))
-u=0;
+        if(!(mouse_b&1))
+        u=0;
 
-
-  if(mouse_b&1 && u==0)
-
+        if(mouse_b&1 && u==0 && mouse_x>=0 && mouse_x<=120 && mouse_y>=0 && mouse_y<=130 )
         {
             mesActeurs1[compteur]->etat=1;
-
             draw_sprite(page,img1[imgcourante1], mouse_x,mouse_y);
             compteur++;
+            argent(pointeurpiece);
             u=1;
-
         }
 
-if (mouse_b&1 && u==1)
-{
+        if(mouse_b&1 && u==0 && mouse_x>=150 && mouse_x<=250 && mouse_y>=0 && mouse_y<=220 )
+        {
+            mesTours[compteurTour]->etat=1;
+            draw_sprite(page,tour, mouse_x,mouse_y);
+            compteurTour++;
+            argent(pointeurpiece);
+            u=2;
+        }
 
-    mesActeurs1[compteur-1]->posx = mouse_x;
-    mesActeurs1[compteur-1]->posy = mouse_y;
+        if (mouse_b&1 && u==2)
+        {
+            mesTours[compteurTour-1]->postx = mouse_x;
+            mesTours[compteurTour-1]->posty = mouse_y;
+            mesTours[compteurTour-1]->posfx = mouse_x;
+        }
 
-}
+        if (mouse_b&1 && u==1 )
+        {
+            mesActeurs1[compteur-1]->posx = mouse_x;
+            mesActeurs1[compteur-1]->posy = mouse_y;
+        }
+        cptimg1++;
 
- cptimg1++;
-        if (cptimg1>=tmpimg1){
+        if (cptimg1>=tmpimg1)
+        {
             cptimg1=0;
             imgcourante1++;
             if (imgcourante1>=2)
-                imgcourante1=0;
+            imgcourante1=0;
         }
 
- for (i=0;i<20;i++)
-    {
-        if(mesActeurs1[i]->etat==1)
+        for (i=0;i<20;i++)
         {
-
-        draw_sprite(page,img1[imgcourante1], mesActeurs1[i]->posx,mesActeurs1[i]->posy);
-
+            if(mesActeurs1[i]->etat==1)
+            {
+            draw_sprite(page,img1[imgcourante1], mesActeurs1[i]->posx,mesActeurs1[i]->posy);
+            }
         }
-    }
 
+        for (i=0;i<20;i++)
+        {
+            if(mesTours[i]->etat==1)
+            {
+            draw_sprite(page,tour, mesTours[i]->postx,mesTours[i]->posty);
+            draw_sprite(page,fleche, mesTours[i]->posfx,mesTours[i]->posty);
+            mesTours[i]->posfx=mesTours[i]->posfx + mesTours[i]->depfx;
+            if(mesTours[i]->posfx>SCREEN_W)
+                {
+                mesTours[i]->posfx=mesTours[i]->postx;
+                }
+            }
+        }
 
-textprintf_ex(page,font,100,300,makecol(0,255,0),makecol(0,0,0),"%d",compteur);
+        textprintf_ex(page,font,100,300,makecol(0,255,0),makecol(0,0,0),"%d",compteur);
 
-
-  ////////////////////////////////////////////////////////
         // 4) AFFICHAGE DU BUFFER MIS A JOUR A L'ECRAN
         blit(page,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 
@@ -346,12 +390,10 @@ textprintf_ex(page,font,100,300,makecol(0,255,0),makecol(0,0,0),"%d",compteur);
     return 0;
 }
 
-void argent(int *piece)
+void argent(int *pointeurpiece)
 {
-    *piece=*piece+50;
+    *pointeurpiece=*pointeurpiece-50;
 }
-
-
 // Allouer et initialiser (aléatoirement) un acteur
 t_acteur * creerActeur()
 {
@@ -475,6 +517,7 @@ t_acteur * creerActeur1()
     // ( en fait on retourne le POINTEUR sur lui )
     return acteur;
 }
+
 void remplirTabActeurs1(t_acteur * tab[50])
 {
     int i;
@@ -484,7 +527,6 @@ void remplirTabActeurs1(t_acteur * tab[50])
     for (i=0;i<50;i++)
         tab[i]=creerActeur1();
 }
-
 // Actualiser un acteur (bouger ...)
 void actualiserActeur(t_acteur *acteur)
 {
@@ -494,7 +536,6 @@ void actualiserActeur(t_acteur *acteur)
     acteur->posx = acteur->posx + acteur->depx;
     acteur->posy = acteur->posy + acteur->depy;
 }
-
 // Gérer l'évolution de l'ensemble des acteurs
 void actualiserTabActeurs(t_acteur * tab[NACTEUR])
 {
@@ -503,9 +544,33 @@ void actualiserTabActeurs(t_acteur * tab[NACTEUR])
     for (i=0;i<NACTEUR;i++)
         actualiserActeur(tab[i]);
 
-
 }
 
+t_tour * creerTour()
+{
+    // pointeur sur l'acteur qui sera créé (et retourné)
+    t_tour * tour;
+
+    tour->etat=0;
+
+    // Création (allocation)
+    tour = (t_tour *)malloc(1*sizeof(t_tour));
+
+    tour->tx = rand()%40+40;
+    tour->ty = rand()%40+40;
+
+    // Position aléatoire (on tient compte de la taille...
+    tour->depfx = 15;
+
+    return tour;
+}
+
+void remplirTabTour(t_tour *tab[50])
+{
+    int i;
+    for (i=0;i<50;i++)
+        tab[i]=creerTour();
+}
 
 
 

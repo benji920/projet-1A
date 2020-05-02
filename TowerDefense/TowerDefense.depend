@@ -2,16 +2,23 @@
 1588420671 source:c:\users\leski\documents\github\projetinfo\towerdefense\main.c
 	"fichier.h"
 
-1587725296 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
-	<allegro.h>
-	<stdio.h>
-	<time.h>
-	<math.h>
+1588431402 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\main.c
+	"fichier.h"
 
 1588375015 source:c:\users\leski\documents\github\projetinfo\towerdefense\structures;c.c
 	"fichier.h"
 
 1588375033 c:\users\leski\documents\github\projetinfo\towerdefense\fichier.h
+	<allegro.h>
+	<stdlib.h>
+	<stdio.h>
+	<time.h>
+	<math.h>
+
+1588421063 source:c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\structures;c.c
+	"fichier.h"
+
+1588421061 c:\users\hugo\onedrive\bureau\projetinfo\towerdefense\fichier.h
 	<allegro.h>
 	<stdlib.h>
 	<stdio.h>
