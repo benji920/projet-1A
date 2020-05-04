@@ -34,8 +34,35 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="actualiser_positions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="collisions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="creer_acteurs.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="fichier.h" />
+		<Unit filename="initialiser_ennemis.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="niveau1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="niveau2.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="niveau3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="remplir_tableau_acteur.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sources.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="structures;c.c">

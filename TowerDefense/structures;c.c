@@ -71,7 +71,7 @@ play_sample(sample,100,100,1000,0);
     }
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=350 && mouse_y<=420)
         {
-            jouer2();
+            jouer1();
         }
         if (mouse_b&1 && mouse_x>=200 && mouse_x<=456 && mouse_y>=500 && mouse_y<=571)
         {
